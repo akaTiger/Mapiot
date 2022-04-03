@@ -9,6 +9,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
 
+from bs4 import BeautifulSoup
+
 def clearCmd():
     os.system('cls' if os.name=='nt' else 'clear')
 
@@ -58,7 +60,8 @@ def whatToDo():
     mapiotFunc = [
             "UUID",
             "serverIP",
-            "slimeChecker"
+            "slimeChecker",
+            "bugChecker"
         ]
     for func in mapiotFunc:
         print(f"[{mapiotFunc.index(func)}] {func}")
@@ -177,14 +180,7 @@ def serverAPI():
         print("-=" * 15)
 
 def slimeChunckFinder():
-    options = webdriver.ChromeOptions()
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-gpu')
-    options.add_argument('window-size=1920x1080')
-    options.add_argument('--hide-scrollbars')
-    options.add_argument('--headless')
-    options.add_argument('test-type')
-    options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
+    clearCmd()
     print("Init headless Chrome...")
     driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
     clearCmd()
@@ -225,8 +221,41 @@ def slimeChunckFinder():
     slimeResult.save(fileDir[:])
     print("Result saved to PATH:", fileDir)
 
+def checkMajorBug():
+    mojangBugURL = "https://bugs.mojang.com/issues/"
+    jqlArg = "?jql=project%20%3D%20MC%20AND%20status%20%3D%20%22In%20Progress%22%20ORDER%20BY%20votes%20DESC%2C%20updated%20DESC"
+    FullURL = mojangBugURL + jqlArg
+    clearCmd()
+    print("Init headless Chrome...")
+    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    clearCmd()
+    print("Visiting Mojang... Wait for 5 seconds...")
+    driver.get(FullURL)
+    time.sleep(5)
+    siteXPATH = '//*[@id="main"]/div/div[2]/div/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/ol'
+    inProgressBugLst = driver.find_element(By.XPATH,siteXPATH)
+    lstHTML = inProgressBugLst.get_attribute('innerHTML')
+    bfObject = BeautifulSoup(str(lstHTML), features="lxml")
+    preBugLst = bfObject.find_all('li')
+    for preBug in preBugLst:
+        print("-" * 11)
+        print(f"[{preBug.get('data-key')}] {preBug.get('title')}")
+    driver.quit()
+
 if __name__ == '__main__':
     clearCmd()
+
+    # Headless Browser Init
+    options = webdriver.ChromeOptions()
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-gpu')
+    options.add_argument('window-size=1920x1080')
+    options.add_argument('--hide-scrollbars')
+    options.add_argument('--headless')
+    options.add_argument('test-type')
+    options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
+    
+    # Starts here
     print("Mapiot stands for Minecraft API organization tool")
     funcToExecute = whatToDo()
     if funcToExecute == "UUID":
@@ -235,4 +264,6 @@ if __name__ == '__main__':
         serverAPI()
     elif funcToExecute == "slimeChecker":
         slimeChunckFinder()
+    elif funcToExecute == "bugChecker":
+        checkMajorBug()
 
