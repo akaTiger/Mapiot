@@ -61,7 +61,8 @@ def whatToDo():
             "UUID",
             "serverIP",
             "slimeChecker",
-            "bugChecker"
+            "bugChecker",
+            "spigotResourceChecker"
         ]
     for func in mapiotFunc:
         print(f"[{mapiotFunc.index(func)}] {func}")
@@ -242,6 +243,26 @@ def checkMajorBug():
         print(f"[{preBug.get('data-key')}] {preBug.get('title')}")
     driver.quit()
 
+def spigotResourceChecker():
+    clearCmd()
+    spigotNumFile = input("Type in the full PATH of spigot resource id list (file path has to be end with a .txt file):\n")
+    clearCmd()
+    with open(spigotNumFile) as resourceIdLst:
+        resDetail = resourceIdLst.readlines()
+        for spigotPlugin in resDetail:
+            spigotPlugin = spigotPlugin[:-1]
+            versionPosition = spigotPlugin.find("-")
+            versionId = spigotPlugin[versionPosition+1:]
+            resId = spigotPlugin[:versionPosition]
+            fullURL = "https://api.spigotmc.org/legacy/update.php?resource=" + resId
+            spigotAPI = requests.get(url=fullURL)
+            if str(spigotAPI.text) != versionId:
+                yesOrNoUTD = "X"
+            else:
+                yesOrNoUTD = "√"
+            print("-" * 70)
+            print(f"Resource ID: {resId} | Your Version: {versionId} | Newest: {str(spigotAPI.text)} | Uptodate: {yesOrNoUTD}")
+
 if __name__ == '__main__':
     clearCmd()
 
@@ -266,4 +287,6 @@ if __name__ == '__main__':
         slimeChunckFinder()
     elif funcToExecute == "bugChecker":
         checkMajorBug()
+    elif funcToExecute == "spigotResourceChecker":
+        spigotResourceChecker()
 
