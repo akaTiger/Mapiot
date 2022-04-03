@@ -9,6 +9,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
 
+def clearCmd():
+    os.system('cls' if os.name=='nt' else 'clear')
+
 def minecraftColorcodeTranslate(letter):
     mcFontDict = {
         "DARK_RED": ["\u00A74", "&4"],
@@ -75,8 +78,8 @@ def checkPWD(pwd):
             return pwd
 
 def resultSavePWD():
-    saveDir = input("Image save PATH, enter 0 goes default(./): ")
-    saveFileName = input("Image filename, enter 0 goes default('slimeResult'):")
+    saveDir = input("Image save PATH, enter 0 goes default(./):\n")
+    saveFileName = input("Image filename, enter 0 goes default('slimeResult'):\n")
     if saveFileName == "0":
         saveFileName = "slimeResult"
     if saveDir == "0":
@@ -131,6 +134,7 @@ def playerAPI():
             content = requests.get(url=fullURL)
             formated = json.loads(content.text)
             dumpLst.append([tool, formated])
+    clearCmd()
     print("-=" * 15)
     print(infoA)
     print(infoB)
@@ -140,7 +144,7 @@ def playerAPI():
 
 def serverAPI():
     infoIn = input("Server IP address:\n")
-    gamePort = int(input("Server port:\n"))
+    gamePort = int(input("Server port, enter 0 indicate default(25565):\n"))
     print("Lookup in progress...")
     toolDict = {
         "mcsrvstat": "https://api.mcsrvstat.us/2/",
@@ -155,6 +159,7 @@ def serverAPI():
             dumpLst.append([tool, formated])
 
     if dumpLst[0][1]["online"] == True:
+        clearCmd()
         print("-=" * 15)
         print("Stat:", "Serving")
         print("Ping:" , f"{int(dumpLst[1][1]['duration']) / 1000000:.2f} 毫秒")
@@ -165,6 +170,7 @@ def serverAPI():
         print("Players:", f"{dumpLst[0][1]['players']['online']} / {dumpLst[0][1]['players']['max']}")
         print("-=" * 15)
     else:
+        clearCmd()
         print("-=" * 15)
         print("IP:", f"{dumpLst[0][1]['hostname']} ({dumpLst[0][1]['ip']})")
         print("Stat:", "Not Serving")
@@ -181,10 +187,12 @@ def slimeChunckFinder():
     options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
     print("Init headless Chrome...")
     driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    clearCmd()
     baseURL = "http://mineatlas.com/?levelName=Random&seed="
     seedInput = input("Minecraft seeds:\n")
     locationX = "&mapCentreX=" + input("Location X:\n")
     locationY = "&mapCentreY=" + input("Location Y:\n")
+    clearCmd()
     uselessArg = [
         "&mapZoom=18",
         "&pos=",
@@ -201,7 +209,8 @@ def slimeChunckFinder():
     driver.get(baseURL + seedInput + locationX + locationY + otherAttri)
     print("Visiting Mineatlas... Wait for 15 seconds...")
     time.sleep(15)
-    slimeCanvas = driver.find_element(By.XPATH,'/html/body/div/div[2]/div[1]/div[2]')
+    webXPATH = '/html/body/div/div[2]/div[1]/div[2]'
+    slimeCanvas = driver.find_element(By.XPATH,webXPATH)
     fileDir = resultSavePWD()
     slimeCanvas.screenshot(fileDir[:])
     driver.quit()
@@ -217,6 +226,7 @@ def slimeChunckFinder():
     print("Result saved to PATH:", fileDir)
 
 if __name__ == '__main__':
+    clearCmd()
     print("Mapiot stands for Minecraft API organization tool")
     funcToExecute = whatToDo()
     if funcToExecute == "UUID":
