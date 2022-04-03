@@ -185,7 +185,19 @@ def slimeChunckFinder():
     seedInput = input("Minecraft seeds:\n")
     locationX = "&mapCentreX=" + input("Location X:\n")
     locationY = "&mapCentreY=" + input("Location Y:\n")
-    otherAttri = "&mapZoom=18&pos=&Player=true&Spawn=true&Likely+Villages=false&Ocean+Monuments=false&Jungle+Temples=false&Desert+Temples=false&Witch+Huts=false&Slime+Chunks=true"
+    uselessArg = [
+        "&mapZoom=18",
+        "&pos=",
+        "&Player=true",
+        "&Spawn=true",
+        "&Likely+Villages=false",
+        "&Ocean+Monuments=false",
+        "&Jungle+Temples=false",
+        "&Desert+Temples=false",
+        "&Witch+Huts=false",
+        "&Slime+Chunks=true"
+    ]
+    otherAttri = ''.join(uselessArg)
     driver.get(baseURL + seedInput + locationX + locationY + otherAttri)
     print("Visiting Mineatlas... Wait for 15 seconds...")
     time.sleep(15)
@@ -198,8 +210,8 @@ def slimeChunckFinder():
     originalWidth, originalHeight = slimeCanvasScreenShot.size
     width = originalWidth / 2 - 40
     top = originalWidth / 2 - 40
-    right = originalWidth / 2 + 40
-    bottom = originalWidth / 2 + 40
+    right = originalHeight / 2 + 40
+    bottom = originalHeight / 2 + 40
     slimeResult = slimeCanvasScreenShot.crop((width, top, right, bottom))
     slimeResult.save(fileDir[:])
     print("Result saved to PATH:", fileDir)
