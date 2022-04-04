@@ -166,7 +166,7 @@ def serverAPI():
         clearCmd()
         print("-=" * 15)
         print("Stat:", "Serving")
-        print("Ping:" , f"{int(dumpLst[1][1]['duration']) / 1000000:.2f} 毫秒")
+        print("Ping:" , f"{int(dumpLst[1][1]['duration']) / 1000000:.2f} ms")
         print("IP:", f"{dumpLst[0][1]['hostname']} ({dumpLst[0][1]['ip']})")
         print("Port:", dumpLst[0][1]["port"])
         print("Motd Line A:", minecraftColorcodeTranslate(dumpLst[0][1]["motd"]["clean"][0]).strip())
