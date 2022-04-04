@@ -273,7 +273,6 @@ if __name__ == '__main__':
     options.add_argument('window-size=1920x1080')
     options.add_argument('--hide-scrollbars')
     options.add_argument('--headless')
-    options.add_argument('test-type')
     options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
     
     # Starts here
