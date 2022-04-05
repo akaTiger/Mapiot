@@ -11,10 +11,26 @@ import os
 
 from bs4 import BeautifulSoup
 
+def goOnLoop():
+    yesNoLoop = input("\n--[ Press enter to keep going ]--")
+    if yesNoLoop == "":
+        return True
+        
 def clearCmd():
+    """
+    Clear Bash Window
+    """
     os.system('cls' if os.name=='nt' else 'clear')
 
 def minecraftColorcodeTranslate(letter):
+    """translate html minecraft motd to a readable form
+
+    Args:
+        letter (string): motd string
+
+    Returns:
+        string: with color code
+    """
     mcFontDict = {
         "DARK_RED": ["\u00A74", "&4"],
         "RED": ["\u00A7c", "&c"],
@@ -44,10 +60,26 @@ def minecraftColorcodeTranslate(letter):
     return letter
         
 def formatUUID(uuid):
+    """uuid form translate, remove dash
+
+    Args:
+        uuid (string): original uuid with dash
+
+    Returns:
+        string: modified uuid with no dash
+    """
     outLst = [alphabit for alphabit in uuid if alphabit != "-"]
     return "".join(outLst)
 
 def testUUID(uuid):
+    """test wether this uuid is true
+
+    Args:
+        uuid (string): player uuid in no-dash form
+
+    Returns:
+        bool: True or False
+    """
     fullURL = "https://api.minetools.eu/profile/" + uuid
     content = requests.get(url=fullURL)
     result = json.loads(content.text)
@@ -57,13 +89,19 @@ def testUUID(uuid):
         return True
 
 def whatToDo():
+    """mapiot function selector
+
+    Returns:
+        string: function id
+    """
     mapiotFunc = [
-            "UUID",
-            "serverIP",
-            "slimeChecker",
-            "bugChecker",
-            "spigotResourceChecker"
-        ]
+        "quit",
+        "UUID",
+        "serverIP",
+        "slimeChecker",
+        "bugChecker",
+        "spigotResourceChecker"
+    ]
     for func in mapiotFunc:
         print(f"[{mapiotFunc.index(func)}] {func}")
     userCall = input("Choose what to do:")
@@ -75,13 +113,26 @@ def whatToDo():
         quit()
 
 def checkPWD(pwd):
-        if pwd[-1] != "/":
-            pwd = pwd + "/"
-            return pwd
-        else:
-            return pwd
+    """check if the pathway is offered is correct end with slash
+
+    Args:
+        pwd (string): full pathway
+
+    Returns:
+        string: full pathway with slash in the end checked
+    """
+    if pwd[-1] != "/":
+        pwd = pwd + "/"
+        return pwd
+    else:
+        return pwd
 
 def resultSavePWD():
+    """check pathway and save image
+
+    Returns:
+        string: save direction with filename
+    """
     saveDir = input("Image save PATH, enter 0 goes default(./):\n")
     saveFileName = input("Image filename, enter 0 goes default('slimeResult'):\n")
     if saveFileName == "0":
@@ -106,6 +157,8 @@ def resultSavePWD():
             return fullDir
 
 def playerAPI():
+    """main func - check playerAPI
+    """
     infoIn = input("Type in player UUID, accept any form:\n")
     toolDict = {
             "MoJangAPI": "https://api.mojang.com/user/profiles/",
@@ -147,6 +200,8 @@ def playerAPI():
     print("-=" * 15)
 
 def serverAPI():
+    """main func - check serverAPI
+    """
     infoIn = input("Server IP address:\n")
     gamePort = int(input("Server port, enter 0 indicate default(25565):\n"))
     print("Lookup in progress...")
@@ -181,6 +236,8 @@ def serverAPI():
         print("-=" * 15)
 
 def slimeChunckFinder():
+    """main func - slimeChunkFinder
+    """
     clearCmd()
     print("Init headless Chrome...")
     driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
@@ -223,6 +280,8 @@ def slimeChunckFinder():
     print("Result saved to PATH:", fileDir)
 
 def checkMajorBug():
+    """main func - checkMajorBug
+    """
     mojangBugURL = "https://bugs.mojang.com/issues/"
     jqlArg = "?jql=project%20%3D%20MC%20AND%20status%20%3D%20%22In%20Progress%22%20ORDER%20BY%20votes%20DESC%2C%20updated%20DESC"
     FullURL = mojangBugURL + jqlArg
@@ -244,6 +303,8 @@ def checkMajorBug():
     driver.quit()
 
 def spigotResourceChecker():
+    """main func - spigotResourceChecker
+    """
     clearCmd()
     spigotNumFile = input("Type in the full PATH of spigot resource id list (file path has to be end with a .txt file):\n")
     clearCmd()
@@ -264,8 +325,6 @@ def spigotResourceChecker():
             print(f"Resource ID: {resId} | Your Version: {versionId} | Newest: {str(spigotAPI.text)} | Uptodate: {yesOrNoUTD}")
 
 if __name__ == '__main__':
-    clearCmd()
-
     # Headless Browser Init
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
@@ -276,16 +335,23 @@ if __name__ == '__main__':
     options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
     
     # Starts here
-    print("Mapiot stands for Minecraft API organization tool")
-    funcToExecute = whatToDo()
-    if funcToExecute == "UUID":
-        playerAPI()
-    elif funcToExecute == "serverIP":
-        serverAPI()
-    elif funcToExecute == "slimeChecker":
-        slimeChunckFinder()
-    elif funcToExecute == "bugChecker":
-        checkMajorBug()
-    elif funcToExecute == "spigotResourceChecker":
-        spigotResourceChecker()
+    while True:
+        clearCmd()
+        print("Mapiot stands for Minecraft API organization tool")
+        funcToExecute = whatToDo()
+        if funcToExecute == "UUID":
+            playerAPI()
+        elif funcToExecute == "serverIP":
+            serverAPI()
+        elif funcToExecute == "slimeChecker":
+            slimeChunckFinder()
+        elif funcToExecute == "bugChecker":
+            checkMajorBug()
+        elif funcToExecute == "spigotResourceChecker":
+            spigotResourceChecker()
+        elif funcToExecute == "quit":
+            print("Bye")
+            break
+        if goOnLoop() is True:
+            pass
 
