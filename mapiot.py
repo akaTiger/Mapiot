@@ -1,6 +1,5 @@
 import requests
 import json
-
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,29 +7,124 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
-
 from bs4 import BeautifulSoup
+import tkinter as tk
 
-def goOnLoop():
-    yesNoLoop = input("\n--[ Press enter to keep going ]--")
-    if yesNoLoop == "":
-        return True
-        
-def clearCmd():
-    """
-    Clear Bash Window
-    """
-    os.system('cls' if os.name=='nt' else 'clear')
-
+# Custom Exceptions Start
+class invalidInputInfo(Exception):
+    pass
+class clearList(Exception):
+    pass
+# Custom Exceptions End
+# ---------------
+# Player API Start
+def playerUUIDgui():
+    homeUnpack()
+    def startThisFunc():
+        uI = usrInput.get()
+        try:
+            outBlock.set(playerAPI(uI))
+        except invalidInputInfo:
+            outBlock.set("Invalid Info")
+    outBlock = tk.StringVar()
+    outLable = tk.Label(mapiot, textvariable=outBlock, font=('Arial', 14))
+    outLable.pack()
+    usrInput = tk.Entry(mapiot, show=None, font=('Arial', 14))
+    usrInput.pack()
+    startIt = tk.Button(mapiot, text = 'Search', command=startThisFunc)
+    startIt.pack()
+    def fucExit():
+        homePack()
+        buttonExit.pack_forget()
+        usrInput.pack_forget()
+        startIt.pack_forget()
+        outLable.pack_forget()
+    buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
+    buttonExit.pack()
+def formatUUID(uuid):
+    outLst = [alphabit for alphabit in uuid if alphabit != "-"]
+    return "".join(outLst)
+def testUUID(uuid):
+    fullURL = "https://api.minetools.eu/profile/" + uuid
+    content = requests.get(url=fullURL)
+    result = json.loads(content.text)
+    try:
+        if str(result["decoded"]) == "None":
+            return False
+        else:
+            return True
+    except:
+        return False
+def playerAPI(infoIn):
+    toolDict = {
+            "MoJangAPI": "https://api.mojang.com/user/profiles/",
+            "MineToolsEU": "https://api.minetools.eu/profile/"
+        }
+    if testUUID(infoIn) is False:
+        raise invalidInputInfo()
+    dumpLst = []
+    for tool in toolDict.keys():
+        if tool == "MoJangAPI":
+            infoNeeded = formatUUID(infoIn)
+            FullURL = toolDict[tool] + infoNeeded + "/names"
+            content = requests.get(url=FullURL)
+            nameLst = json.loads(content.text)
+            if len(nameLst) > 1:
+                infoA = "Current ID: " + nameLst[-1]["name"]
+                previousName = []
+                for name in nameLst[:-1]:
+                    previousName.append(name["name"])
+                infoB = "Used IDs: " + "; ".join(previousName)
+            if len(nameLst) == 1:
+                infoA = "ID: " + nameLst[0]["name"]
+        else:
+            fullURL = toolDict[tool] + infoIn
+            content = requests.get(url=fullURL)
+            formated = json.loads(content.text)
+            dumpLst.append([tool, formated])
+    returnLst = []
+    returnLst.append(str("-=" * 15))
+    returnLst.append(infoA)
+    returnLst.append(infoB)
+    try:
+        returnLst.append(f'Cape URL: {dumpLst[0][1]["decoded"]["textures"]["CAPE"]["url"]}')
+    except:
+        returnLst.append(f'Cape URL: NoCape')
+    returnLst.append(f'Skin URL: {dumpLst[0][1]["decoded"]["textures"]["SKIN"]["url"]}')
+    returnLst.append(str("-=" * 15))
+    return "\n".join(returnLst)
+# Player API End
+# ---------------
+# Server API Start
+def serverAPIgui():
+    homeUnpack()
+    def startThisFunc():
+        uI = usrInputIP.get()
+        uI2 = usrInputPort.get()
+        try:
+            outBlock.set(serverAPI(uI, uI2))
+        except invalidInputInfo:
+            outBlock.set("Invalid Info")
+    outBlock = tk.StringVar()
+    outBlock.set("Ip in upper box \nport in lower box \ntype 0 indicate default port")
+    outLable = tk.Label(mapiot, textvariable=outBlock, font=('Arial', 14))
+    outLable.pack()
+    usrInputIP = tk.Entry(mapiot, show=None, font=('Arial', 14))
+    usrInputIP.pack()
+    usrInputPort = tk.Entry(mapiot, show=None, font=('Arial', 14))
+    usrInputPort.pack()
+    startIt = tk.Button(mapiot, text = 'Search', command=startThisFunc)
+    startIt.pack()
+    def fucExit():
+        homePack()
+        buttonExit.pack_forget()
+        usrInputIP.pack_forget()
+        usrInputPort.pack_forget()
+        startIt.pack_forget()
+        outLable.pack_forget()
+    buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
+    buttonExit.pack()
 def minecraftColorcodeTranslate(letter):
-    """translate html minecraft motd to a readable form
-
-    Args:
-        letter (string): motd string
-
-    Returns:
-        string: with color code
-    """
     mcFontDict = {
         "DARK_RED": ["\u00A74", "&4"],
         "RED": ["\u00A7c", "&c"],
@@ -58,81 +152,60 @@ def minecraftColorcodeTranslate(letter):
         letter = letter.replace(mcFontDict[colorCodes][0], mcFontDict[colorCodes][1])
     letter = letter.replace("&gt;&gt;&gt;", ">>>")
     return letter
-        
-def formatUUID(uuid):
-    """uuid form translate, remove dash
-
-    Args:
-        uuid (string): original uuid with dash
-
-    Returns:
-        string: modified uuid with no dash
-    """
-    outLst = [alphabit for alphabit in uuid if alphabit != "-"]
-    return "".join(outLst)
-
-def testUUID(uuid):
-    """test wether this uuid is true
-
-    Args:
-        uuid (string): player uuid in no-dash form
-
-    Returns:
-        bool: True or False
-    """
-    fullURL = "https://api.minetools.eu/profile/" + uuid
-    content = requests.get(url=fullURL)
-    result = json.loads(content.text)
-    if str(result["decoded"]) == "None":
-        return False
-    else:
-        return True
-
-def whatToDo():
-    """mapiot function selector
-
-    Returns:
-        string: function id
-    """
-    mapiotFunc = [
-        "quit",
-        "UUID",
-        "serverIP",
-        "slimeChecker",
-        "bugChecker",
-        "spigotResourceChecker"
-    ]
-    for func in mapiotFunc:
-        print(f"[{mapiotFunc.index(func)}] {func}")
-    userCall = input("Choose what to do:")
+def serverAPI(infoIn, gamePort):
+    toolDict = {
+        "mcsrvstat": "https://api.mcsrvstat.us/2/",
+        "mcapi": "https://mcapi.us/server/status?ip=",
+    }
+    dumpLst = []
+    outLst = []
+    def getConent(fullURL):
+        content = requests.get(url=fullURL)
+        formated = json.loads(content.text)
+        dumpLst.append([tool, formated])
     try:
-        userCall = int(userCall)
-        return mapiotFunc[userCall]
+        if int(gamePort) == 0:
+            for tool in toolDict.keys():
+                fullURL = toolDict[tool] + infoIn
+                getConent(fullURL)
+        else:
+            for tool in toolDict.keys():
+                fullURL = toolDict[tool] + infoIn + "&port=" + gamePort
+                getConent(fullURL)
     except:
-        print("Invalid input. Quitting...")
-        quit()
-
+        raise invalidInputInfo
+    if dumpLst[0][1]["online"] == True:
+        outLst.append(str("-=" * 15))
+        outLst.append("Stat: Serving")
+        outLst.append(f"Ping: {int(dumpLst[1][1]['duration']) / 1000000:.2f} ms")
+        outLst.append(f"IP:{dumpLst[0][1]['hostname']} ({dumpLst[0][1]['ip']})")
+        outLst.append(f'Port: {dumpLst[0][1]["port"]}')
+        try:
+            outLst.append(f'Motd Line A: {minecraftColorcodeTranslate(dumpLst[0][1]["motd"]["clean"][0]).strip()}')
+        except:
+            outLst.append(f'Motd Line A: NoInfo')
+        try:
+            outLst.append(f'Motd Line B: {minecraftColorcodeTranslate(dumpLst[0][1]["motd"]["clean"][1]).strip()}')
+        except:
+            outLst.append(f'Motd Line B: NoInfo')
+        outLst.append(f"Players: {dumpLst[0][1]['players']['online']} / {dumpLst[0][1]['players']['max']}")
+        outLst.append(str("-=" * 15))
+    else:
+        outLst.append(str("-=" * 15))
+        outLst.append(f"IP:{dumpLst[0][1]['hostname']} ({dumpLst[0][1]['ip']})")
+        outLst.append("Stat: Down")
+        outLst.append(str("-=" * 15))
+    return "\n".join(outLst)
+# Server API End
+# ---------------
+# Slime Chunck Finder Start
 def checkPWD(pwd):
-    """check if the pathway is offered is correct end with slash
-
-    Args:
-        pwd (string): full pathway
-
-    Returns:
-        string: full pathway with slash in the end checked
-    """
     if pwd[-1] != "/":
         pwd = pwd + "/"
         return pwd
     else:
         return pwd
-
 def resultSavePWD():
-    """check pathway and save image
-
-    Returns:
-        string: save direction with filename
-    """
     saveDir = input("Image save PATH, enter 0 goes default(./):\n")
     saveFileName = input("Image filename, enter 0 goes default('slimeResult'):\n")
     if saveFileName == "0":
@@ -155,98 +228,13 @@ def resultSavePWD():
             saveDir = checkPWD(saveDir)
             fullDir = saveDir + saveFileName + ".png"
             return fullDir
-
-def playerAPI():
-    """main func - check playerAPI
-    """
-    infoIn = input("Type in player UUID, accept any form:\n")
-    toolDict = {
-            "MoJangAPI": "https://api.mojang.com/user/profiles/",
-            "MineToolsEU": "https://api.minetools.eu/profile/"
-        }
-    while True:
-        if testUUID(infoIn) is False:
-            infoIn = input("Invalid UUID, enter again or 'q' to quit:\n")
-            if infoIn == "q":
-                quit()
-        else:
-            break
-    dumpLst = []
-    for tool in toolDict.keys():
-        if tool == "MoJangAPI":
-            infoNeeded = formatUUID(infoIn)
-            FullURL = toolDict[tool] + infoNeeded + "/names"
-            content = requests.get(url=FullURL)
-            nameLst = json.loads(content.text)
-            if len(nameLst) > 1:
-                infoA = "Current ID: " + nameLst[-1]["name"]
-                previousName = []
-                for name in nameLst[:-1]:
-                    previousName.append(name["name"])
-                infoB = "Used IDs: " + "; ".join(previousName)
-            if len(nameLst) == 1:
-                infoA = "ID: " + nameLst[0]["name"]
-        else:
-            fullURL = toolDict[tool] + infoIn
-            content = requests.get(url=fullURL)
-            formated = json.loads(content.text)
-            dumpLst.append([tool, formated])
-    clearCmd()
-    print("-=" * 15)
-    print(infoA)
-    print(infoB)
-    print("Cape URL:", dumpLst[0][1]["decoded"]["textures"]["CAPE"]["url"])
-    print("Skin URL:", dumpLst[0][1]["decoded"]["textures"]["SKIN"]["url"])
-    print("-=" * 15)
-
-def serverAPI():
-    """main func - check serverAPI
-    """
-    infoIn = input("Server IP address:\n")
-    gamePort = int(input("Server port, enter 0 indicate default(25565):\n"))
-    print("Lookup in progress...")
-    toolDict = {
-        "mcsrvstat": "https://api.mcsrvstat.us/2/",
-        "mcapi": "https://mcapi.us/server/status?ip=",
-    }
-    dumpLst = []
-    if gamePort == 0:
-        for tool in toolDict.keys():
-            fullURL = toolDict[tool] + infoIn
-            content = requests.get(url=fullURL)
-            formated = json.loads(content.text)
-            dumpLst.append([tool, formated])
-
-    if dumpLst[0][1]["online"] == True:
-        clearCmd()
-        print("-=" * 15)
-        print("Stat:", "Serving")
-        print("Ping:" , f"{int(dumpLst[1][1]['duration']) / 1000000:.2f} ms")
-        print("IP:", f"{dumpLst[0][1]['hostname']} ({dumpLst[0][1]['ip']})")
-        print("Port:", dumpLst[0][1]["port"])
-        print("Motd Line A:", minecraftColorcodeTranslate(dumpLst[0][1]["motd"]["clean"][0]).strip())
-        print("Motd Line B:", minecraftColorcodeTranslate(dumpLst[0][1]["motd"]["clean"][1]).strip())
-        print("Players:", f"{dumpLst[0][1]['players']['online']} / {dumpLst[0][1]['players']['max']}")
-        print("-=" * 15)
-    else:
-        clearCmd()
-        print("-=" * 15)
-        print("IP:", f"{dumpLst[0][1]['hostname']} ({dumpLst[0][1]['ip']})")
-        print("Stat:", "Not Serving")
-        print("-=" * 15)
-
 def slimeChunckFinder():
-    """main func - slimeChunkFinder
-    """
-    clearCmd()
     print("Init headless Chrome...")
     driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
-    clearCmd()
     baseURL = "http://mineatlas.com/?levelName=Random&seed="
     seedInput = input("Minecraft seeds:\n")
     locationX = "&mapCentreX=" + input("Location X:\n")
     locationY = "&mapCentreY=" + input("Location Y:\n")
-    clearCmd()
     uselessArg = [
         "&mapZoom=18",
         "&pos=",
@@ -278,40 +266,96 @@ def slimeChunckFinder():
     slimeResult = slimeCanvasScreenShot.crop((width, top, right, bottom))
     slimeResult.save(fileDir[:])
     print("Result saved to PATH:", fileDir)
-
+# Slime Chunck Finder End
+# ---------------
+# Major Bug Checker Start
+def majorBugGUI():
+    homeUnpack()
+    textBlockA = tk.Listbox(mapiot, yscrollcommand = scrollB.set, font=('Arial', 14))
+    for eachEr in checkMajorBug():
+        textBlockA.insert("end", eachEr + "\n")
+    textBlockA.pack()
+    def fucExit():
+        homePack()
+        buttonExit.pack_forget()
+        textBlockA.pack_forget()
+    buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
+    buttonExit.pack()
 def checkMajorBug():
-    """main func - checkMajorBug
-    """
     mojangBugURL = "https://bugs.mojang.com/issues/"
     jqlArg = "?jql=project%20%3D%20MC%20AND%20status%20%3D%20%22In%20Progress%22%20ORDER%20BY%20votes%20DESC%2C%20updated%20DESC"
-    FullURL = mojangBugURL + jqlArg
-    clearCmd()
-    print("Init headless Chrome...")
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
-    clearCmd()
-    print("Visiting Mojang... Wait for 5 seconds...")
-    driver.get(FullURL)
-    time.sleep(5)
+    mojangBugReportURL = mojangBugURL + jqlArg
     siteXPATH = '//*[@id="main"]/div/div[2]/div/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/ol'
+    driver = visitSite(mojangBugReportURL)
     inProgressBugLst = driver.find_element(By.XPATH,siteXPATH)
     lstHTML = inProgressBugLst.get_attribute('innerHTML')
     bfObject = BeautifulSoup(str(lstHTML), features="lxml")
     preBugLst = bfObject.find_all('li')
+    guiDisplay = []
     for preBug in preBugLst:
-        print("-" * 11)
-        print(f"[{preBug.get('data-key')}] {preBug.get('title')}")
+        guiDisplay.append(str("━" * 70))
+        guiDisplay.append(f"\t[{preBug.get('data-key')}] \t{preBug.get('title')}")
     driver.quit()
-
-def spigotResourceChecker():
-    """main func - spigotResourceChecker
-    """
-    clearCmd()
-    spigotNumFile = input("Type in the full PATH of spigot resource id list (file path has to be end with a .txt file):\n")
-    clearCmd()
-    with open(spigotNumFile) as resourceIdLst:
-        resDetail = resourceIdLst.readlines()
+    return guiDisplay
+# Major Bug Checker End
+# ---------------
+# Spigot Resource Checker Start
+def spigotCheckerGUI():
+    homeUnpack()
+    processLst = []
+    def inCheck(usrIn):
+        try:
+            testA = usrIn.find("-")
+        except:
+            raise invalidInputInfo
+        if len(usrIn) < 3:
+            raise invalidInputInfo
+        if usrIn == "clear":
+            raise clearList
+        return usrIn
+    def addToProcessLst():
+        try:
+            processLst.append(inCheck(usrInputId.get()))
+            outBlock.set("\n".join(processLst))
+        except invalidInputInfo:
+            outBlock.set("Invalid Resource Info")
+        except clearList:
+            for i in range(len(processLst)):
+                processLst.pop(0)
+            outBlock.set("Cleared List")
+    def startThisFunc():
+        try:
+            outBlock.set(spigotResourceChecker(processLst))
+        except invalidInputInfo:
+            outBlock.set("Invalid Info")
+    def seeList():
+        outBlock.set("\n".join(processLst))
+    outBlock = tk.StringVar()
+    outBlock.set("type in the format of <spigotID>[dash]<version>, click add")
+    outLable = tk.Label(mapiot, textvariable=outBlock, font=('Arial', 14))
+    outLable.pack()
+    usrInputId = tk.Entry(mapiot, show=None, font=('Arial', 14))
+    usrInputId.pack()
+    addTrigger = tk.Button(mapiot, text = 'Add to List', command=addToProcessLst)
+    addTrigger.pack()
+    curLst = tk.Button(mapiot, text = 'Current List', command=seeList)
+    curLst.pack()
+    startIt = tk.Button(mapiot, text = 'Check', command=startThisFunc)
+    startIt.pack()
+    def fucExit():
+        homePack()
+        buttonExit.pack_forget()
+        usrInputId.pack_forget()
+        addTrigger.pack_forget()
+        startIt.pack_forget()
+        outLable.pack_forget()
+        curLst.pack_forget()
+    buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
+    buttonExit.pack()
+def spigotResourceChecker(resDetail):
+    returnLst = []
+    try:
         for spigotPlugin in resDetail:
-            spigotPlugin = spigotPlugin[:-1]
             versionPosition = spigotPlugin.find("-")
             versionId = spigotPlugin[versionPosition+1:]
             resId = spigotPlugin[:versionPosition]
@@ -321,11 +365,15 @@ def spigotResourceChecker():
                 yesOrNoUTD = "X"
             else:
                 yesOrNoUTD = "√"
-            print("-" * 70)
-            print(f"Resource ID: {resId} | Your Version: {versionId} | Newest: {str(spigotAPI.text)} | Uptodate: {yesOrNoUTD}")
-
-if __name__ == '__main__':
-    # Headless Browser Init
+            returnLst.append(str("-" * 70))
+            returnLst.append(f"Resource ID: {resId} | Your Version: {versionId} | Newest: {str(spigotAPI.text)} | Uptodate: {yesOrNoUTD}")
+        return "\n".join(returnLst)
+    except:
+        return "empty list"
+# Spigot Resource Checker Stop
+# ---------------
+# Environment Start
+def chromeSetting():
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-gpu')
@@ -333,25 +381,46 @@ if __name__ == '__main__':
     options.add_argument('--hide-scrollbars')
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
-    
-    # Starts here
-    while True:
-        clearCmd()
-        print("Mapiot stands for Minecraft API organization tool")
-        funcToExecute = whatToDo()
-        if funcToExecute == "UUID":
-            playerAPI()
-        elif funcToExecute == "serverIP":
-            serverAPI()
-        elif funcToExecute == "slimeChecker":
-            slimeChunckFinder()
-        elif funcToExecute == "bugChecker":
-            checkMajorBug()
-        elif funcToExecute == "spigotResourceChecker":
-            spigotResourceChecker()
-        elif funcToExecute == "quit":
-            print("Bye")
-            break
-        if goOnLoop() is True:
-            pass
-
+    return options
+def visitSite(FullURL):
+    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+    driver.get(FullURL)
+    time.sleep(2)
+    return driver
+# Environment End
+# ---------------
+# GUI Start
+def homeUnpack():
+    buttonMajorBugGUI.pack_forget()
+    buttonQuit.pack_forget()
+    buttonUUID.pack_forget()
+    buttonServerAPI.pack_forget()
+    buttonSpigotChecker.pack_forget()
+def homePack():
+    buttonMajorBugGUI.pack()
+    buttonUUID.pack()
+    buttonServerAPI.pack()
+    buttonSpigotChecker.pack()
+    buttonQuit.pack()
+# GUI End
+# ---------------
+# Script Start
+if __name__ == '__main__':
+    # Headless Browser Init
+    options = chromeSetting()
+    # GUI Init
+    mapiot = tk.Tk()
+    mapiot.title("Mapiot v1.0.0")
+    mapiot.geometry('1000x600')
+    scrollB= tk.Scrollbar(mapiot)
+    scrollB.pack(side="right", fill="y")
+    # Buttons
+    buttonUUID = tk.Button(mapiot, text = 'Player UUID Checker', command=playerUUIDgui)
+    buttonMajorBugGUI = tk.Button(mapiot, text = 'Mojang Bugs Checker', command=majorBugGUI)
+    buttonServerAPI = tk.Button(mapiot, text = 'Server Stats Checker', command=serverAPIgui)
+    buttonSpigotChecker = tk.Button(mapiot, text = 'Spigot Resources Checker', command=spigotCheckerGUI)
+    buttonQuit = tk.Button(mapiot, text = 'Quit', command=quit)
+    # Button Install
+    homePack()
+    # GUI Loop
+    mapiot.mainloop()
