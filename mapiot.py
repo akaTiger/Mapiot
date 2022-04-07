@@ -1,6 +1,7 @@
+from bdb import Breakpoint
 import requests
 import json
-from PIL import Image
+from PIL import Image, ImageTk
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -9,6 +10,7 @@ import time
 import os
 from bs4 import BeautifulSoup
 import tkinter as tk
+import io
 
 # Custom Exceptions Start
 class invalidInputInfo(Exception):
@@ -20,25 +22,51 @@ class clearList(Exception):
 # Player API Start
 def playerUUIDgui():
     homeUnpack()
+    canvasFrame = tk.Frame(mapiot)
+    canvasFrame.pack()
     def startThisFunc():
+        try:
+            for skinC in canvasFrame.winfo_children():
+                skinC.destroy()
+        except:
+            pass
         uI = usrInput.get()
         try:
-            outBlock.set(playerAPI(uI))
+            getInfo = playerAPI(uI)
+            outBlock.set(getInfo[0])
+            # image size 552x736
+            url = str("https://minecraftskinstealer.com/api/v1/skin/render/fullbody/" + getInfo[1] + "/700")
+            skinVar.set(url)
+            skinImage = ImageTk.PhotoImage(Image.open(io.BytesIO(requests.get(skinVar.get()).content)))
+            skinCanvas = tk.Label(canvasFrame, image=skinImage, bg="white")
+            skinCanvas.image = skinImage
+            skinCanvas.pack()
+            
         except invalidInputInfo:
             outBlock.set("Invalid Info")
     outBlock = tk.StringVar()
+    skinVar = tk.StringVar()
+    skinVar.set("https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png")
+    # https://minecraftskinstealer.com/api/v1/skin/render/fullbody/LilT1ger/700
+    # https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png
+    
     outLable = tk.Label(mapiot, textvariable=outBlock, font=('Arial', 14))
     outLable.pack()
     usrInput = tk.Entry(mapiot, show=None, font=('Arial', 14))
     usrInput.pack()
     startIt = tk.Button(mapiot, text = 'Search', command=startThisFunc)
     startIt.pack()
+    
     def fucExit():
         homePack()
         buttonExit.pack_forget()
-        usrInput.pack_forget()
-        startIt.pack_forget()
-        outLable.pack_forget()
+        try:
+            usrInput.pack_forget()
+            startIt.pack_forget()
+            outLable.pack_forget()
+            canvasFrame.destroy()
+        except:
+            pass
     buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
     buttonExit.pack()
 def formatUUID(uuid):
@@ -58,11 +86,10 @@ def testUUID(uuid):
 def playerAPI(infoIn):
     toolDict = {
             "MoJangAPI": "https://api.mojang.com/user/profiles/",
-            "MineToolsEU": "https://api.minetools.eu/profile/"
+            # "MineToolsEU": "https://api.minetools.eu/profile/"
         }
     if testUUID(infoIn) is False:
         raise invalidInputInfo()
-    dumpLst = []
     for tool in toolDict.keys():
         if tool == "MoJangAPI":
             infoNeeded = formatUUID(infoIn)
@@ -70,29 +97,19 @@ def playerAPI(infoIn):
             content = requests.get(url=FullURL)
             nameLst = json.loads(content.text)
             if len(nameLst) > 1:
-                infoA = "Current ID: " + nameLst[-1]["name"]
+                infoA = nameLst[-1]["name"]
                 previousName = []
                 for name in nameLst[:-1]:
                     previousName.append(name["name"])
                 infoB = "Used IDs: " + "; ".join(previousName)
             if len(nameLst) == 1:
-                infoA = "ID: " + nameLst[0]["name"]
-        else:
-            fullURL = toolDict[tool] + infoIn
-            content = requests.get(url=fullURL)
-            formated = json.loads(content.text)
-            dumpLst.append([tool, formated])
+                infoA = nameLst[0]["name"]
     returnLst = []
     returnLst.append(str("-=" * 15))
-    returnLst.append(infoA)
+    returnLst.append(str("Current ID: " + infoA))
     returnLst.append(infoB)
-    try:
-        returnLst.append(f'Cape URL: {dumpLst[0][1]["decoded"]["textures"]["CAPE"]["url"]}')
-    except:
-        returnLst.append(f'Cape URL: NoCape')
-    returnLst.append(f'Skin URL: {dumpLst[0][1]["decoded"]["textures"]["SKIN"]["url"]}')
     returnLst.append(str("-=" * 15))
-    return "\n".join(returnLst)
+    return "\n".join(returnLst), infoA
 # Player API End
 # ---------------
 # Server API Start
@@ -249,14 +266,12 @@ def slimeChunckFinder():
     ]
     otherAttri = ''.join(uselessArg)
     driver.get(baseURL + seedInput + locationX + locationY + otherAttri)
-    print("Visiting Mineatlas... Wait for 15 seconds...")
     time.sleep(15)
     webXPATH = '/html/body/div/div[2]/div[1]/div[2]'
     slimeCanvas = driver.find_element(By.XPATH,webXPATH)
     fileDir = resultSavePWD()
     slimeCanvas.screenshot(fileDir[:])
     driver.quit()
-    print("Image processing...")
     slimeCanvasScreenShot = Image.open(fileDir[:])
     originalWidth, originalHeight = slimeCanvasScreenShot.size
     width = originalWidth / 2 - 40
@@ -270,15 +285,19 @@ def slimeChunckFinder():
 # ---------------
 # Major Bug Checker Start
 def majorBugGUI():
-    homeUnpack()
-    textBlockA = tk.Listbox(mapiot, yscrollcommand = scrollB.set, font=('Arial', 14))
-    for eachEr in checkMajorBug():
-        textBlockA.insert("end", eachEr + "\n")
+    textBlockA = tk.Label(mapiot, text = 'This may take seconds to load, pls wait', font=('Arial', 14))
     textBlockA.pack()
+    homeUnpack()
+    textBlockB = tk.Listbox(mapiot, yscrollcommand = scrollB.set, font=('Arial', 14), height=10, width=50)
+    for eachEr in checkMajorBug():
+        textBlockB.insert("end", eachEr + "\n")
+    textBlockB.pack()
+    # Finish loading
+    textBlockA.pack_forget()
     def fucExit():
         homePack()
         buttonExit.pack_forget()
-        textBlockA.pack_forget()
+        textBlockB.pack_forget()
     buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
     buttonExit.pack()
 def checkMajorBug():
@@ -330,6 +349,7 @@ def spigotCheckerGUI():
             outBlock.set("Invalid Info")
     def seeList():
         outBlock.set("\n".join(processLst))
+    # Display
     outBlock = tk.StringVar()
     outBlock.set("type in the format of <spigotID>[dash]<version>, click add")
     outLable = tk.Label(mapiot, textvariable=outBlock, font=('Arial', 14))
@@ -342,6 +362,7 @@ def spigotCheckerGUI():
     curLst.pack()
     startIt = tk.Button(mapiot, text = 'Check', command=startThisFunc)
     startIt.pack()
+    # Exit Button
     def fucExit():
         homePack()
         buttonExit.pack_forget()
@@ -387,16 +408,23 @@ def visitSite(FullURL):
     driver.get(FullURL)
     time.sleep(2)
     return driver
+def excecutePath():
+    preworkPath = "C:/Program Files/mapiot" if os.name=='nt' else str(os.environ['HOME'] + "/Downloads/mapiot")
+    if not os.path.exists(preworkPath):
+        os.makedirs(preworkPath)
+    return preworkPath + "/"
 # Environment End
 # ---------------
 # GUI Start
 def homeUnpack():
+    nameDisplay.pack_forget()
     buttonMajorBugGUI.pack_forget()
     buttonQuit.pack_forget()
     buttonUUID.pack_forget()
     buttonServerAPI.pack_forget()
     buttonSpigotChecker.pack_forget()
 def homePack():
+    nameDisplay.pack()
     buttonMajorBugGUI.pack()
     buttonUUID.pack()
     buttonServerAPI.pack()
@@ -411,10 +439,11 @@ if __name__ == '__main__':
     # GUI Init
     mapiot = tk.Tk()
     mapiot.title("Mapiot v1.0.0")
-    mapiot.geometry('1000x600')
+    mapiot.geometry('500x300')
     scrollB= tk.Scrollbar(mapiot)
     scrollB.pack(side="right", fill="y")
     # Buttons
+    nameDisplay = tk.Label(mapiot, text = 'Thank you for using Mapiot.', font=('Arial', 20), width=30, height=2)
     buttonUUID = tk.Button(mapiot, text = 'Player UUID Checker', command=playerUUIDgui)
     buttonMajorBugGUI = tk.Button(mapiot, text = 'Mojang Bugs Checker', command=majorBugGUI)
     buttonServerAPI = tk.Button(mapiot, text = 'Server Stats Checker', command=serverAPIgui)
