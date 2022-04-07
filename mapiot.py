@@ -1,4 +1,3 @@
-from bdb import Breakpoint
 import requests
 import json
 from PIL import Image, ImageTk
@@ -17,57 +16,76 @@ class invalidInputInfo(Exception):
     pass
 class clearList(Exception):
     pass
+class checkFaild(Exception):
+    pass
+class siteUnreachable(Exception):
+    pass
+class screenshotSelectedElementError(Exception):
+    pass
+class imageCropError(Exception):
+    pass
+class displayError(Exception):
+    pass
 # Custom Exceptions End
-# ---------------
+
 # Player API Start
 def playerUUIDgui():
     homeUnpack()
+    # Frame init
+    mapiot.geometry('1000x600')
     canvasFrame = tk.Frame(mapiot)
-    canvasFrame.pack()
+    infoFrame = tk.Frame(mapiot)
+    # one time search
     def startThisFunc():
+        # Clear previous canvas in frame
         try:
             for skinC in canvasFrame.winfo_children():
                 skinC.destroy()
         except:
             pass
+        # get info from gui
         uI = usrInput.get()
+        # processing
         try:
+            # Info processing
             getInfo = playerAPI(uI)
             outBlock.set(getInfo[0])
-            # image size 552x736
+            # image processing
             url = str("https://minecraftskinstealer.com/api/v1/skin/render/fullbody/" + getInfo[1] + "/700")
-            skinVar.set(url)
-            skinImage = ImageTk.PhotoImage(Image.open(io.BytesIO(requests.get(skinVar.get()).content)))
+            skinImage = ImageTk.PhotoImage(Image.open(io.BytesIO(requests.get(url).content)))
             skinCanvas = tk.Label(canvasFrame, image=skinImage, bg="white")
             skinCanvas.image = skinImage
             skinCanvas.pack()
-            
         except invalidInputInfo:
             outBlock.set("Invalid Info")
+        except Exception:
+            outBlock.set("Something went wrong")
+    # dynamic info init
     outBlock = tk.StringVar()
-    skinVar = tk.StringVar()
-    skinVar.set("https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png")
-    # https://minecraftskinstealer.com/api/v1/skin/render/fullbody/LilT1ger/700
-    # https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png
-    
-    outLable = tk.Label(mapiot, textvariable=outBlock, font=('Arial', 14))
+    # Default Image init
+    defaultImageUrl = "https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png"
+    skinImage = ImageTk.PhotoImage(Image.open(io.BytesIO(requests.get(defaultImageUrl).content)))
+    skinCanvas = tk.Label(canvasFrame, image=skinImage, bg="white")
+    skinCanvas.image = skinImage
+    skinCanvas.pack()
+    canvasFrame.pack()
+    # button init
+    outLable = tk.Label(infoFrame, textvariable=outBlock, font=('Arial', 14))
     outLable.pack()
-    usrInput = tk.Entry(mapiot, show=None, font=('Arial', 14))
+    usrInput = tk.Entry(infoFrame, show=None, font=('Arial', 14))
     usrInput.pack()
-    startIt = tk.Button(mapiot, text = 'Search', command=startThisFunc)
+    startIt = tk.Button(infoFrame, text = 'Search', command=startThisFunc)
     startIt.pack()
-    
+    infoFrame.pack()
+    # exit init
     def fucExit():
         homePack()
-        buttonExit.pack_forget()
         try:
-            usrInput.pack_forget()
-            startIt.pack_forget()
-            outLable.pack_forget()
+            infoFrame.pack_forget()
             canvasFrame.destroy()
         except:
-            pass
-    buttonExit = tk.Button(mapiot, text = 'Back to home', command=fucExit)
+            outBlock.set("Something went wrong")
+    buttonExit = tk.Button(infoFrame, text = 'Back to home', command=fucExit)
     buttonExit.pack()
 def formatUUID(uuid):
     outLst = [alphabit for alphabit in uuid if alphabit != "-"]
@@ -111,7 +129,7 @@ def playerAPI(infoIn):
     returnLst.append(str("-=" * 15))
     return "\n".join(returnLst), infoA
 # Player API End
-# ---------------
+
 # Server API Start
 def serverAPIgui():
     homeUnpack()
@@ -214,44 +232,63 @@ def serverAPI(infoIn, gamePort):
         outLst.append(str("-=" * 15))
     return "\n".join(outLst)
 # Server API End
-# ---------------
+
 # Slime Chunck Finder Start
-def checkPWD(pwd):
-    if pwd[-1] != "/":
-        pwd = pwd + "/"
-        return pwd
-    else:
-        return pwd
-def resultSavePWD():
-    saveDir = input("Image save PATH, enter 0 goes default(./):\n")
-    saveFileName = input("Image filename, enter 0 goes default('slimeResult'):\n")
-    if saveFileName == "0":
-        saveFileName = "slimeResult"
-    if saveDir == "0":
-        fullDir = saveFileName + ".png"
-        return fullDir
-    else:
-        if not os.path.exists(saveDir):
-            yesNoCreatePath = input("Unknown path, create it? [y/N]")
-            if yesNoCreatePath == "y":
-                os.makedirs(saveDir)
-                saveDir = checkPWD(saveDir)
-                fullDir = saveDir + saveFileName + ".png"
-                return fullDir
-            else:
-                print("Quitting...")
-                quit()
-        else:
-            saveDir = checkPWD(saveDir)
-            fullDir = saveDir + saveFileName + ".png"
-            return fullDir
-def slimeChunckFinder():
-    print("Init headless Chrome...")
-    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+def slimeCFgui():
+    homeUnpack()
+    mapiot.geometry('1000x600')
+    slimeImgFrame = tk.Frame(mapiot)
+    slimeImgFrame.pack()
+    infoFrame = tk.Frame(mapiot)
+    infoFrame.pack()
+    
+    def startSearch():
+        try:
+            try:
+                for slimeImg in slimeImgFrame.winfo_children():
+                    slimeImg.destroy()
+            except:
+                pass
+            try:
+                slimeFilePath = slimeChunckFinder(seedInputEntry.get(), xLocateEntry.get(), yLocateEntry.get())
+                slimeImageCall = tk.PhotoImage(file=slimeFilePath)
+                slimeImageDisplay = tk.Label(slimeImgFrame, image=slimeImageCall)
+                slimeImageDisplay.image = slimeImageCall
+                slimeImageDisplay.pack()
+            except:
+                raise displayError
+        except checkFaild:
+            errorTextVar.set("checkFaild")
+        except siteUnreachable:
+            errorTextVar.set("siteUnreachable")
+        except screenshotSelectedElementError:
+            errorTextVar.set("screenshotSelectedElementError")
+        except imageCropError:
+            errorTextVar.set("imageCropError")
+        except displayError:
+            errorTextVar.set("displayError")
+    
+    errorTextVar = tk.StringVar()
+    errorTextVar.set("")
+    errorNoticeBlock = tk.Label(infoFrame, textvariable=errorTextVar, font=('Arial', 14))
+    errorNoticeBlock.pack()
+    seedInputEntry = tk.Entry(infoFrame, show=None, font=('Arial', 14))
+    seedInputEntry.pack()
+    xLocateEntry = tk.Entry(infoFrame, show=None, font=('Arial', 14))
+    xLocateEntry.pack()
+    yLocateEntry = tk.Entry(infoFrame, show=None, font=('Arial', 14))
+    yLocateEntry.pack()
+    searchStartButton = tk.Button(infoFrame, text="Search 5x5 Chunks", command=startSearch)
+    searchStartButton.pack()
+    
+    def exitSearch():
+        infoFrame.pack_forget()
+        slimeImgFrame.pack_forget()
+        homePack()
+    exitButton = tk.Button(infoFrame, text = 'Back to home', command=exitSearch)
+    exitButton.pack()
+def slimeChunckFinder(seedInput, locationX, locationY):
     baseURL = "http://mineatlas.com/?levelName=Random&seed="
-    seedInput = input("Minecraft seeds:\n")
-    locationX = "&mapCentreX=" + input("Location X:\n")
-    locationY = "&mapCentreY=" + input("Location Y:\n")
     uselessArg = [
         "&mapZoom=18",
         "&pos=",
@@ -265,24 +302,39 @@ def slimeChunckFinder():
         "&Slime+Chunks=true"
     ]
     otherAttri = ''.join(uselessArg)
-    driver.get(baseURL + seedInput + locationX + locationY + otherAttri)
-    time.sleep(15)
+    try:
+        driver = visitSite(baseURL + seedInput + locationX + locationY + otherAttri)
+    except:
+        raise siteUnreachable
     webXPATH = '/html/body/div/div[2]/div[1]/div[2]'
-    slimeCanvas = driver.find_element(By.XPATH,webXPATH)
-    fileDir = resultSavePWD()
-    slimeCanvas.screenshot(fileDir[:])
+    try:
+        slimeCanvas = driver.find_element(By.XPATH,webXPATH)
+    except:
+        raise checkFaild
+    try:
+        slimeFilePath = os.path.expandvars('$HOME') + "/Downloads/mapiot"
+        if not os.path.exists(slimeFilePath):
+            os.makedirs(slimeFilePath)
+        slimeFile = slimeFilePath + "/slimeChunks.png"
+        slimeCanvas.screenshot(slimeFile)
+    except:
+        raise screenshotSelectedElementError
     driver.quit()
-    slimeCanvasScreenShot = Image.open(fileDir[:])
-    originalWidth, originalHeight = slimeCanvasScreenShot.size
-    width = originalWidth / 2 - 40
-    top = originalWidth / 2 - 40
-    right = originalHeight / 2 + 40
-    bottom = originalHeight / 2 + 40
-    slimeResult = slimeCanvasScreenShot.crop((width, top, right, bottom))
-    slimeResult.save(fileDir[:])
-    print("Result saved to PATH:", fileDir)
+    try:
+        slimeCanvasScreenShot = Image.open(slimeFile)
+        originalWidth, originalHeight = slimeCanvasScreenShot.size
+        width = originalWidth / 2 - 60
+        top = originalWidth / 2 - 60
+        right = originalHeight / 2 + 60
+        bottom = originalHeight / 2 + 60
+        slimeResult = slimeCanvasScreenShot.crop((width, top, right, bottom))
+        slimeResult.save(slimeFile)
+        return slimeFile
+    except:
+        raise imageCropError
+    
 # Slime Chunck Finder End
-# ---------------
+
 # Major Bug Checker Start
 def majorBugGUI():
     textBlockA = tk.Label(mapiot, text = 'This may take seconds to load, pls wait', font=('Arial', 14))
@@ -317,7 +369,7 @@ def checkMajorBug():
     driver.quit()
     return guiDisplay
 # Major Bug Checker End
-# ---------------
+
 # Spigot Resource Checker Start
 def spigotCheckerGUI():
     homeUnpack()
@@ -392,7 +444,7 @@ def spigotResourceChecker(resDetail):
     except:
         return "empty list"
 # Spigot Resource Checker Stop
-# ---------------
+
 # Environment Start
 def chromeSetting():
     options = webdriver.ChromeOptions()
@@ -414,24 +466,17 @@ def excecutePath():
         os.makedirs(preworkPath)
     return preworkPath + "/"
 # Environment End
-# ---------------
+
 # GUI Start
 def homeUnpack():
-    nameDisplay.pack_forget()
-    buttonMajorBugGUI.pack_forget()
-    buttonQuit.pack_forget()
-    buttonUUID.pack_forget()
-    buttonServerAPI.pack_forget()
-    buttonSpigotChecker.pack_forget()
+    # Frame Unpack
+    homeMenu.pack_forget()
 def homePack():
-    nameDisplay.pack()
-    buttonMajorBugGUI.pack()
-    buttonUUID.pack()
-    buttonServerAPI.pack()
-    buttonSpigotChecker.pack()
-    buttonQuit.pack()
+    # Frame Pack, init window size
+    mapiot.geometry('500x300')
+    homeMenu.pack()
 # GUI End
-# ---------------
+
 # Script Start
 if __name__ == '__main__':
     # Headless Browser Init
@@ -443,13 +488,23 @@ if __name__ == '__main__':
     scrollB= tk.Scrollbar(mapiot)
     scrollB.pack(side="right", fill="y")
     # Buttons
-    nameDisplay = tk.Label(mapiot, text = 'Thank you for using Mapiot.', font=('Arial', 20), width=30, height=2)
-    buttonUUID = tk.Button(mapiot, text = 'Player UUID Checker', command=playerUUIDgui)
-    buttonMajorBugGUI = tk.Button(mapiot, text = 'Mojang Bugs Checker', command=majorBugGUI)
-    buttonServerAPI = tk.Button(mapiot, text = 'Server Stats Checker', command=serverAPIgui)
-    buttonSpigotChecker = tk.Button(mapiot, text = 'Spigot Resources Checker', command=spigotCheckerGUI)
-    buttonQuit = tk.Button(mapiot, text = 'Quit', command=quit)
+    homeMenu = tk.Frame(mapiot)
+    nameDisplay = tk.Label(homeMenu, text = 'Thank you for using Mapiot.', font=('Arial', 20), width=30, height=2)
+    buttonUUID = tk.Button(homeMenu, text = 'Player UUID Checker', command=playerUUIDgui)
+    buttonMajorBugGUI = tk.Button(homeMenu, text = 'Mojang Bugs Checker', command=majorBugGUI)
+    buttonServerAPI = tk.Button(homeMenu, text = 'Server Stats Checker', command=serverAPIgui)
+    buttonSpigotChecker = tk.Button(homeMenu, text = 'Spigot Resources Checker', command=spigotCheckerGUI)
+    slimeChecker = tk.Button(homeMenu, text = 'Slime Chunk Finder', command=slimeCFgui)
+    buttonQuit = tk.Button(homeMenu, text = 'Quit', command=quit)
     # Button Install
+    nameDisplay.pack()
+    buttonMajorBugGUI.pack()
+    buttonUUID.pack()
+    buttonServerAPI.pack()
+    buttonSpigotChecker.pack()
+    slimeChecker.pack()
+    buttonQuit.pack()
+    # Frame Install
     homePack()
     # GUI Loop
     mapiot.mainloop()
