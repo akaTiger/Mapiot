@@ -1,4 +1,4 @@
-# mapiot
+# Mapiot
 Minecraft API Organization Tool
 
 ##### Supported Functions
