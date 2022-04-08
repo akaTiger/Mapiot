@@ -269,7 +269,7 @@ def slimeCFgui():
             errorTextVar.set("displayError")
     
     errorTextVar = tk.StringVar()
-    errorTextVar.set("")
+    errorTextVar.set("First Line: Minecraft Seed \nSecond Line: X Location \nThird Line: Y Location")
     errorNoticeBlock = tk.Label(infoFrame, textvariable=errorTextVar, font=('Arial', 14))
     errorNoticeBlock.pack()
     seedInputEntry = tk.Entry(infoFrame, show=None, font=('Arial', 14))
