@@ -20,7 +20,7 @@ class playerAPI(object):
         self.endtime = datetime.datetime.now()
 
         self.basic.insert(INSERT, f"Username: \n{id}\n")
-        self.basic.insert(INSERT, f"\nProcess Time: \n{(self.endtime-self.starttime).microseconds} microseconds\n")
+        self.basic.insert(INSERT, f"\nProcess Time: \n{(self.endtime-self.starttime).microseconds / 1000} ms\n")
         self.comp.insert(INSERT, f"UUID: \n{uuid}\n")
         self.comp.insert(INSERT, f"\nSkin URL: \n{skin}\n")
         self.comp.insert(INSERT, f"\nName History: \n")
@@ -28,7 +28,7 @@ class playerAPI(object):
             if i['changed_to_at'] == 0:
                 self.comp.insert(INSERT, f"{i['name']} was the user's first name\n")
             else:
-                self.comp.insert(INSERT, f"{i['name']} on {i['changed_to_at']}\n")
+                self.comp.insert(INSERT, f"{i['name']} on {datetime.datetime.fromtimestamp(i['changed_to_at'] / 1000, datetime.timezone.utc)}\n")
         self.comp.insert(INSERT, "\nSkull Cmd 1.13+: \n/give @s minecraft:player_head{SkullOwner:'"+ str(id) +"'}\n")
         self.comp.insert(INSERT, '\nSkull Cmd 1.12: \n/give @p minecraft:skull 1 3 {SkullOwner:"'+ str(id) +'"}\n')
         self.comp.insert(INSERT, '\nChange Head Cmd: \n/replaceitem entity @p slot.armor.head minecraft:skull 1 3 {SkullOwner:"' + str(id) + '"}')
