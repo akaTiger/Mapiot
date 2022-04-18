@@ -1,6 +1,8 @@
 # Mapiot
 Minecraft API Organization Tool
 
+v2.0 is comming!
+
 ##### Supported Functions
 
 - Convert UUID to player infos
