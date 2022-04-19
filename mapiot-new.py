@@ -2,6 +2,7 @@ from turtle import width
 from tkinter import *
 from slimeChunkDisplay import *
 from playerAPI import *
+from serverAPI import *
 
 class app(object):
     def __init__(self, projName, windowWidth, windowLength):
@@ -13,15 +14,16 @@ class app(object):
         self.mainFrameInit()
         self.topMenuDisplay()
         # self.fucSlimeChecker()
+        self.root.update()
         self.root.mainloop()
         
     def windowConfigure(self):
         self.root.title(self.projName)
         self.root.update_idletasks()
-        width = 600
+        width = self.windowWidth
         frm_width = self.root.winfo_rootx() - self.root.winfo_x()
         win_width = width + 2 * frm_width
-        height = 520
+        height = self.windowLength
         titlebar_height = self.root.winfo_rooty() - self.root.winfo_y()
         win_height = height + titlebar_height + frm_width
         x = self.root.winfo_screenwidth() // 2 - win_width // 2
@@ -59,15 +61,15 @@ class app(object):
             if selectedValue == self.tmdFuncOptions[0]:
                 self.clearMainDisplay()
                 self.fsc = slimeChunkDisplay(self.mainDisplay)
-                self.root.update()
+                
             elif selectedValue == self.tmdFuncOptions[1]:
                 self.clearMainDisplay()
-                self.root.update()
                 self.papi = playerAPI(self.mainDisplay)
+                
             elif selectedValue == self.tmdFuncOptions[2]:
                 self.clearMainDisplay()
-                self.root.update()
+                self.sapi = serverAPI(self.mainDisplay)
     
 
 if __name__ == "__main__":
-    startScript = app("Mapiot", 900, 850)
+    startScript = app("Mapiot", 600, 520)
