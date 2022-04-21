@@ -97,7 +97,6 @@ class serverAPI(object):
             self.plst[key] = val
     
     def infoGet(self, ip):
-        # zro = 0
         url = "https://api.mcsrvstat.us/2/" + ip
         js = json.dumps(json.loads(requests.get(url).text))
         self.js = json.loads(js)

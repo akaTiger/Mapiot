@@ -3,6 +3,7 @@ from tkinter import *
 from slimeChunkDisplay import *
 from playerAPI import *
 from serverAPI import *
+from mojangBugs import *
 
 class app(object):
     def __init__(self, projName, windowWidth, windowLength):
@@ -47,7 +48,8 @@ class app(object):
         self.tmdFuncOptions = [
             "Java Edition Slime Chunks Checker",
             "Player API Query",
-            "Server API Query"
+            "Server API Query",
+            "Mojang Open Issues Checker"
         ]
         self.tmdFuncVar = StringVar()
         self.tmdFuncVar.set("Player API Query")
@@ -69,7 +71,10 @@ class app(object):
             elif selectedValue == self.tmdFuncOptions[2]:
                 self.clearMainDisplay()
                 self.sapi = serverAPI(self.mainDisplay)
-    
+            
+            elif selectedValue == self.tmdFuncOptions[3]:
+                self.clearMainDisplay()
+                self.mojBug = mojBug(self.mainDisplay)
 
 if __name__ == "__main__":
     startScript = app("Mapiot", 600, 520)
