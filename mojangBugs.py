@@ -1,4 +1,5 @@
 from tkinter import *
+import lib
 class mojBug(object):
     def __init__(self, mainDisplay):
         self.main = mainDisplay
@@ -21,18 +22,38 @@ class mojBug(object):
             self.input = Frame(self.main, height=150)
             self.input.pack(fill="x")
             # input block
-            self.query = LabelFrame(self.input, text="Query Input", padx=10, pady=10)
+            self.query = LabelFrame(self.input, text="Filters", padx=10, pady=10)
             self.query.pack(fill="both", padx=10, pady=10)
             
         if True:
-            self.optVar = StringVar()
-            self.optVar.set("Server IP")
-            self.opt = [
-                "Server IP"
-            ]
-            OptionMenu(self.query, self.optVar, *self.opt).pack(side="left")
+            # init filter var
+            self._version = StringVar()
+            self._project = StringVar()
+            self._stat = StringVar()
+        
+        if True:
+            # init option menu
+            self._version.set("EMPTY")
+            self._versions = lib.version()
+            self._project.set("MC")
+            self._projects = lib.project()
+            self._stat.set("Open")
+            self._stats = lib.status()
+        
+        if True:
+            frameTop = Frame(self.query)
+            frameBot = Frame(self.query)
+            frameTop.pack(expand="yes", fill="x")
+            frameBot.pack(expand="yes", fill="x")
+        if True:
+            # options widget
+            OptionMenu(frameTop, self._project, *self._projects).pack(side="left", expand="yes", fill="x")
+            OptionMenu(frameTop, self._version, *self._versions).pack(side="left", expand="yes", fill="x")
+            OptionMenu(frameTop, self._stat, *self._stats).pack(side="left", expand="yes", fill="x")
+            Entry(frameBot).pack(side="left", expand="yes", fill="x")
             
-            Button(self.query, text="Apply", command=self.api).pack(side="left")
+        if True:
+            Button(frameBot, text="Apply & Search", command=self.api).pack(side="left")
     def api(self):
         pass
     

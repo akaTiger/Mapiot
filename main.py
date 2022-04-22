@@ -63,15 +63,12 @@ class app(object):
             if selectedValue == self.tmdFuncOptions[0]:
                 self.clearMainDisplay()
                 self.fsc = slimeChunkDisplay(self.mainDisplay)
-                
             elif selectedValue == self.tmdFuncOptions[1]:
                 self.clearMainDisplay()
                 self.papi = playerAPI(self.mainDisplay)
-                
             elif selectedValue == self.tmdFuncOptions[2]:
                 self.clearMainDisplay()
                 self.sapi = serverAPI(self.mainDisplay)
-            
             elif selectedValue == self.tmdFuncOptions[3]:
                 self.clearMainDisplay()
                 self.mojBug = mojBug(self.mainDisplay)
