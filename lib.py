@@ -52,3 +52,19 @@ def status():
         "Postponed"
     ]
     return stat
+
+def jqStr(a, b, c, d):
+    dic = {
+        "=": "%3D",
+        " ": "%20",
+        '"': "%22",
+        ",": "%2C"
+    }
+    jq = f"project = {a} AND status = {b} AND affectedVersion = {c} AND text ~ {d} ORDER BY votes DESC, created DESC"
+    url = []
+    for i in jq:
+        if i in dic.keys():
+            url.append(dic[i])
+        else:
+            url.append(i)
+    return "".join(url)

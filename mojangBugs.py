@@ -41,21 +41,22 @@ class mojBug(object):
             self._stats = lib.status()
         
         if True:
+            # self.query frames
             frameTop = Frame(self.query)
             frameBot = Frame(self.query)
             frameTop.pack(expand="yes", fill="x")
             frameBot.pack(expand="yes", fill="x")
+        
         if True:
             # options widget
             OptionMenu(frameTop, self._project, *self._projects).pack(side="left", expand="yes", fill="x")
             OptionMenu(frameTop, self._version, *self._versions).pack(side="left", expand="yes", fill="x")
             OptionMenu(frameTop, self._stat, *self._stats).pack(side="left", expand="yes", fill="x")
             Entry(frameBot).pack(side="left", expand="yes", fill="x")
-            
-        if True:
             Button(frameBot, text="Apply & Search", command=self.api).pack(side="left")
+
     def api(self):
-        pass
+        
     
     
     
