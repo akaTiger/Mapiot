@@ -4,6 +4,7 @@ from slimeChunkDisplay import *
 from playerAPI import *
 from serverAPI import *
 from mojangBugs import *
+from spigotAPI import *
 
 class app(object):
     def __init__(self, projName, windowWidth, windowLength):
@@ -49,7 +50,8 @@ class app(object):
             "Java Edition Slime Chunks Checker",
             "Player API Query",
             "Server API Query",
-            "Mojang Open Issues Checker"
+            "Mojang Open Issues Checker",
+            "Spigot Resource Update Tracker"
         ]
         self.tmdFuncVar = StringVar()
         self.tmdFuncVar.set("Player API Query")
@@ -72,6 +74,9 @@ class app(object):
             elif selectedValue == self.tmdFuncOptions[3]:
                 self.clearMainDisplay()
                 self.mojBug = mojBug(self.mainDisplay)
+            elif selectedValue == self.tmdFuncOptions[4]:
+                self.clearMainDisplay()
+                self.spigot = spigotTracker(self.mainDisplay)
 
 if __name__ == "__main__":
     startScript = app("Mapiot", 600, 520)
