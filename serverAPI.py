@@ -53,6 +53,7 @@ class serverAPI(object):
             self.ip.insert(0, "play.hypixel.net")
             Button(self.query, text="Search", command=self.api).pack(side="left")
     
+    # find targets
     def infoA(self):
         self.cinfo["Server Ip"] = self.js["ip"]
     def infoB(self):
@@ -123,6 +124,7 @@ class serverAPI(object):
             self.infoR,
             self.infoS
         ]
+        # process funclst
         for i in processlst:
             try:
                 i()
@@ -130,13 +132,16 @@ class serverAPI(object):
                 pass
         return self.cinfo, self.rawicon, self.plst
     
+    # ava to imagetk 10,10 size
     def getAva(self, uuid):
         url = "https://crafatar.com/avatars/" + uuid
         image = ImageTk.PhotoImage(Image.open(io.BytesIO(requests.get(url).content)).resize((10, 10)))
         self.images.append(image)
         self.comp.image_create(INSERT, padx=5, pady=5, image=self.images[-1])
-        
+    
+    # main func  
     def api(self):
+        # ava keep reference
         self.images = []
         if True:
             # usr input get
