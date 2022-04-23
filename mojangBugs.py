@@ -58,8 +58,6 @@ class mojBug(object):
             self._disbox = ScrolledText(self.info)
             self._disbox.pack(fill="both", expand="yes", padx=10, pady=10)
         
-        
-        
         if True:
             # options widget
             OptionMenu(frameTop, self._project, *self._projects).pack(side="left", expand="yes", fill="x")
@@ -77,24 +75,30 @@ class mojBug(object):
             '"': "%22",
             ",": "%2C"
         }
-        jqAttr = []
-        for i in lst[:-1]:
-            if " " in i:
-                jqAttr.append(str('"') + i + str('"'))
+        if True:
+            # format
+            jqAttr = []
+            for i in lst[:-1]:
+                if " " in i:
+                    jqAttr.append(str('"') + i + str('"'))
+                else:
+                    jqAttr.append(i)
+            jqAttr.append(str('"') + lst[-1] + str('"'))
+        if True:
+            # url pre gen
+            if jqAttr[3] == "":
+                jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} ORDER BY votes DESC, updated DESC"
             else:
-                jqAttr.append(i)
-        jqAttr.append(str('"') + lst[-1] + str('"'))
-        if jqAttr[3] == "":
-            jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} ORDER BY votes DESC, updated DESC"
-        else:
-            jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} AND text ~ {jqAttr[3]} ORDER BY votes DESC, updated DESC"
-        url = []
-        for i in jq:
-            if i in dic.keys():
-                url.append(dic[i])
-            else:
-                url.append(i)
-        return "".join(url)
+                jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} AND text ~ {jqAttr[3]} ORDER BY votes DESC, updated DESC"
+        if True:
+            # url gen
+            url = []
+            for i in jq:
+                if i in dic.keys():
+                    url.append(dic[i])
+                else:
+                    url.append(i)
+            return "".join(url)
 
     def api(self):
         infoGet = [self._project.get(), self._stat.get(), self._version.get(), self._entry.get()]

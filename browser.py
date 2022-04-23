@@ -5,6 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 def webD(url, c):
+    # target: class name
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-gpu')
@@ -12,7 +13,6 @@ def webD(url, c):
     options.add_argument('--hide-scrollbars')
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
-    
     driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
     driver.get(url)
     time.sleep(2)
@@ -21,6 +21,7 @@ def webD(url, c):
     return html
 
 def webDs(url):
+    # target: full page
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-gpu')
@@ -28,7 +29,6 @@ def webDs(url):
     options.add_argument('--hide-scrollbars')
     options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors", "enable-automation"])
-    
     driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
     driver.get(url)
     time.sleep(2)
