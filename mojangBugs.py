@@ -1,21 +1,27 @@
+from dis import dis
 from tkinter import *
+from tkinter.scrolledtext import ScrolledText
 import lib
+from browser import *
+from bs4 import BeautifulSoup
+
+
 class mojBug(object):
     def __init__(self, mainDisplay):
         self.main = mainDisplay
         self._funcName = "Mojang Open Issues Checker"
+        self._head = "https://bugs.mojang.com/issues/?jql="
         self.initFrame()
+    
+    def debug(self, a):
+        with open("/Users/tiger/Downloads/debug.txt", "w") as file:
+            file.write(str(a))
+    
     def initFrame(self):
         if True:
             # info Frame
             self.info = Frame(self.main)
             self.info.pack(fill="both", expand="yes")
-            # info left
-            self.left = Frame(self.info)
-            self.left.pack(side="left", fill="y")
-            # info right
-            self.right = Frame(self.info)
-            self.right.pack(side="left", fill="both", expand="yes")
             
         if True:
             # input Frame
@@ -48,15 +54,65 @@ class mojBug(object):
             frameBot.pack(expand="yes", fill="x")
         
         if True:
+            # scroll text
+            self._disbox = ScrolledText(self.info)
+            self._disbox.pack(fill="both", expand="yes", padx=10, pady=10)
+        
+        
+        
+        if True:
             # options widget
             OptionMenu(frameTop, self._project, *self._projects).pack(side="left", expand="yes", fill="x")
             OptionMenu(frameTop, self._version, *self._versions).pack(side="left", expand="yes", fill="x")
             OptionMenu(frameTop, self._stat, *self._stats).pack(side="left", expand="yes", fill="x")
-            Entry(frameBot).pack(side="left", expand="yes", fill="x")
+            self._entry = Entry(frameBot)
+            self._entry.pack(side="left", expand="yes", fill="x")
             Button(frameBot, text="Apply & Search", command=self.api).pack(side="left")
 
+    def jqStr(self, lst):
+        # lst [project, status, version, text]
+        dic = {
+            "=": "%3D",
+            " ": "%20",
+            '"': "%22",
+            ",": "%2C"
+        }
+        jqAttr = []
+        for i in lst[:-1]:
+            if " " in i:
+                jqAttr.append(str('"') + i + str('"'))
+            else:
+                jqAttr.append(i)
+        jqAttr.append(str('"') + lst[-1] + str('"'))
+        if jqAttr[3] == "":
+            jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} ORDER BY votes DESC, updated DESC"
+        else:
+            jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} AND text ~ {jqAttr[3]} ORDER BY votes DESC, updated DESC"
+        url = []
+        for i in jq:
+            if i in dic.keys():
+                url.append(dic[i])
+            else:
+                url.append(i)
+        return "".join(url)
+
     def api(self):
+        infoGet = [self._project.get(), self._stat.get(), self._version.get(), self._entry.get()]
+        jqKeys = self.jqStr(infoGet)
+        fullurl = self._head + jqKeys
+        c = 'issue-list'
+        html = webD(fullurl, c)
         
-    
-    
-    
+        bs = BeautifulSoup(html, features="lxml")
+        self.raw = bs.find_all('li')
+        
+        pre = []
+        for i in self.raw:
+            pre.append(f"[{i.get('data-key')}] \t{i.get('title')}\n")
+        
+        self._disbox.delete("1.0", "end")
+        
+        for i in pre:
+            self._disbox.insert(INSERT, i)
+        
+        
