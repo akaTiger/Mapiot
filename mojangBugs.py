@@ -75,6 +75,7 @@ class mojBug(object):
             '"': "%22",
             ",": "%2C"
         }
+        
         if True:
             # format
             jqAttr = []
@@ -84,12 +85,14 @@ class mojBug(object):
                 else:
                     jqAttr.append(i)
             jqAttr.append(str('"') + lst[-1] + str('"'))
+            
         if True:
             # url pre gen
             if jqAttr[3] == "":
                 jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} ORDER BY votes DESC, updated DESC"
             else:
                 jq = f"project = {jqAttr[0]} AND status = {jqAttr[1]} AND affectedVersion = {jqAttr[2]} AND text ~ {jqAttr[3]} ORDER BY votes DESC, updated DESC"
+        
         if True:
             # url gen
             url = []
@@ -101,22 +104,27 @@ class mojBug(object):
             return "".join(url)
 
     def api(self):
-        infoGet = [self._project.get(), self._stat.get(), self._version.get(), self._entry.get()]
-        jqKeys = self.jqStr(infoGet)
-        fullurl = self._head + jqKeys
-        c = 'issue-list'
-        html = webD(fullurl, c)
+        if True:
+            # info pre
+            infoGet = [self._project.get(), self._stat.get(), self._version.get(), self._entry.get()]
+            # info pull from target
+            jqKeys = self.jqStr(infoGet)
+            fullurl = self._head + jqKeys
+            c = 'issue-list'
+            html = webD(fullurl, c)
         
-        bs = BeautifulSoup(html, features="lxml")
-        self.raw = bs.find_all('li')
+        if True:
+            # html filter
+            bs = BeautifulSoup(html, features="lxml")
+            self.raw = bs.find_all('li')
         
-        pre = []
-        for i in self.raw:
-            pre.append(f"[{i.get('data-key')}] \t{i.get('title')}\n")
-        
-        self._disbox.delete("1.0", "end")
-        
-        for i in pre:
-            self._disbox.insert(INSERT, i)
+        if True:
+            # text out
+            pre = []
+            for i in self.raw:
+                pre.append(f"[{i.get('data-key')}] \t{i.get('title')}\n")
+            self._disbox.delete("1.0", "end")
+            for i in pre:
+                self._disbox.insert(INSERT, i)
         
         
