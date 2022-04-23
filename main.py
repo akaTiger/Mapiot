@@ -1,4 +1,3 @@
-from turtle import width
 from tkinter import *
 from slimeChunkDisplay import *
 from playerAPI import *
