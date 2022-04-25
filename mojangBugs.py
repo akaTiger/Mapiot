@@ -1,4 +1,3 @@
-from dis import dis
 from tkinter import *
 from tkinter.scrolledtext import ScrolledText
 import lib
