@@ -65,3 +65,11 @@ def getParameters():
         7: ["Author Information By Excact User Name", "findAuthor"]
     }
     return p
+
+def errorMessage():
+    e = {
+        "unexpected": "*** UNEXPECTED ERROR: PLEASE SUBMIT A ISSUE ***",
+        "id": "*** ID ERROR: SHOULD NOT CONTAIN ALPHABET ***",
+        "parameter": "*** Input Parameter ERROR: CHECK GITHUB PAGE FOR CORRECT USEAGE ***"
+    }
+    return e
