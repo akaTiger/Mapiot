@@ -43,19 +43,48 @@ class spigotTracker(object):
     def query(self):
         choice = self._funcChoice.get()
         if self._funcLib[0][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[0][1])
+            get = self._disbox.get("1.0", "end")
+            get = get[:-1]
+            if len(get) > 0:
+                try:
+                    l = get.split(",")
+                    if len(l) == 1:
+                        suf = "&category=" + str(l[0])
+                        self.api(self._head + "?action=" + self._funcLib[0][1] + suf)
+                    elif len(l) == 2:
+                        suf = "&category=" + str(l[0]) + "&page=" + str(l[1])
+                        self.api(self._head + "?action=" + self._funcLib[0][1] + suf)
+                    else:
+                        raise ValueError
+                except:
+                    self.api(self._head + "?action=" + self._funcLib[0][1])
+            else:
+                self.api(self._head + "?action=" + self._funcLib[0][1])
+        
         elif self._funcLib[1][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[1][1])
+        
+        
         elif self._funcLib[2][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[2][1])
+        
+        
         elif self._funcLib[3][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[3][1])
+        
+        
         elif self._funcLib[4][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[4][1])
+        
+        
         elif self._funcLib[5][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[5][1])
+        
+        
         elif self._funcLib[6][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[6][1])
+        
+        
         elif self._funcLib[7][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[7][1])
     
