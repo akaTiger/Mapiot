@@ -1,11 +1,19 @@
 import lib
 from tkinter import *
 from tkinter.scrolledtext import ScrolledText
+from pathlib import Path
+
+class idError(Exception):
+    pass
+class parameterError(Exception):
+    pass
 
 class spigotTracker(object):
     def __init__(self, mainDisplay):
         self._main = mainDisplay
         self.funcName = "Spigot API Tracker"
+        self._workDirectory = Path(__file__).parent
+        self._errorMessage = lib.errorMessage()
         self._head = "https://api.spigotmc.org/simple/0.2/index.php"
         self._nameLib = [i[0] for i in lib.getParameters().values()]
         self._funcLib = lib.getParameters()
@@ -42,6 +50,7 @@ class spigotTracker(object):
     
     def query(self):
         choice = self._funcChoice.get()
+        # get all
         if self._funcLib[0][0] == choice:
             get = self._disbox.get("1.0", "end")
             get = get[:-1]
@@ -55,15 +64,32 @@ class spigotTracker(object):
                         suf = "&category=" + str(l[0]) + "&page=" + str(l[1])
                         self.api(self._head + "?action=" + self._funcLib[0][1] + suf)
                     else:
-                        raise ValueError
+                        raise parameterError
+                except parameterError:
+                    self._disbox.delete("1.0", "end")
+                    self._disbox.insert(INSERT, self._errorMessage("parameter"))
                 except:
-                    self.api(self._head + "?action=" + self._funcLib[0][1])
+                    self._disbox.delete("1.0", "end")
+                    self._disbox.insert(INSERT, self._errorMessage("unexpected"))
             else:
                 self.api(self._head + "?action=" + self._funcLib[0][1])
-        
+        # id to resource
         elif self._funcLib[1][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[1][1])
-        
+            ids = self._disbox.get("1.0", "end")
+            try:
+                if len(i) == 0:
+                    raise idError
+                for i in ids:
+                    if i.isalpha() is True:
+                        raise idError
+                suf = "&id=" + str(ids)
+                self.api(self._head + "?action=" + self._funcLib[1][1] + suf)
+            except idError:
+                self._disbox.delete("1.0", "end")
+                self._disbox.insert(INSERT, self._errorMessage("id"))
+            except:
+                self._disbox.delete("1.0", "end")
+                self._disbox.insert(INSERT, self._errorMessage("unexpected"))
         
         elif self._funcLib[2][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[2][1])
