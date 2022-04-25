@@ -52,4 +52,16 @@ def status():
         "Postponed"
     ]
     return stat
-    
+
+def getParameters():
+    p = {
+        0: ["List All", "listResources"],
+        1: ["Resource Info By ID", "getResource"],
+        2: ["Resource Info By Author", "getResourcesByAuthor"],
+        3: ["List Avaliable Categories", "listResourceCategories"],
+        4: ["Resource Update By ID", "getResourceUpdate"],
+        5: ["Resource ALL Updates By ID", "getResourceUpdates"],
+        6: ["Author Information By User ID", "getAuthor"],
+        7: ["Author Information By Excact User Name", "findAuthor"]
+    }
+    return p
