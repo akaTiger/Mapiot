@@ -94,7 +94,6 @@ class spigotTracker(object):
         elif self._funcLib[2][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[2][1])
         
-        
         elif self._funcLib[3][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[3][1])
         
@@ -118,4 +117,5 @@ class spigotTracker(object):
         if True:
             self._disbox.delete("1.0", "end")
             self._disbox.insert(INSERT, url)
+        # midterm monday, reviewing
         
