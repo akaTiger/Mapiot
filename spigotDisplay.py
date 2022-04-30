@@ -1,13 +1,9 @@
 import lib
+import errorClasses as er
 from tkinter import *
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
 from spigotClasses import *
-
-class idError(Exception):
-    pass
-class parameterError(Exception):
-    pass
 
 class spigotTracker(object):
     def __init__(self, mainDisplay):
@@ -15,7 +11,6 @@ class spigotTracker(object):
         self.funcName = "Spigot API Tracker"
         self._workDirectory = Path(__file__).parent
         self._errorMessage = lib.errorMessage()
-        self._head = "https://api.spigotmc.org/simple/0.2/index.php"
         self._nameLib = [i[0] for i in lib.getParameters().values()]
         self._funcLib = lib.getParameters()
         self.initFrame()
@@ -49,72 +44,31 @@ class spigotTracker(object):
     def debug(self):
         print(self._funcChoice.get())
     
+    def writeIn(self, info):
+        if True:
+            self._disbox.delete("1.0", "end")
+            self._disbox.insert(INSERT, info)
+    
     def query(self):
+        apiObj = spigotAPI()
         choice = self._funcChoice.get()
         # get all
         if self._funcLib[0][0] == choice:
-            get = self._disbox.get("1.0", "end")
-            get = get[:-1]
-            if len(get) > 0:
-                try:
-                    l = get.split(",")
-                    if len(l) == 1:
-                        suf = "&category=" + str(l[0])
-                        self.api(self._head + "?action=" + self._funcLib[0][1] + suf)
-                    elif len(l) == 2:
-                        suf = "&category=" + str(l[0]) + "&page=" + str(l[1])
-                        self.api(self._head + "?action=" + self._funcLib[0][1] + suf)
-                    else:
-                        raise parameterError
-                except parameterError:
-                    self._disbox.delete("1.0", "end")
-                    self._disbox.insert(INSERT, self._errorMessage("parameter"))
-                except:
-                    self._disbox.delete("1.0", "end")
-                    self._disbox.insert(INSERT, self._errorMessage("unexpected"))
-            else:
-                self.api(self._head + "?action=" + self._funcLib[0][1])
-        # id to resource
-        elif self._funcLib[1][0] == choice:
-            ids = self._disbox.get("1.0", "end")
             try:
-                if len(i) == 0:
-                    raise idError
-                for i in ids:
-                    if i.isalpha() is True:
-                        raise idError
-                suf = "&id=" + str(ids)
-                self.api(self._head + "?action=" + self._funcLib[1][1] + suf)
-            except idError:
-                self._disbox.delete("1.0", "end")
-                self._disbox.insert(INSERT, self._errorMessage("id"))
+                write = apiObj.listResources(get=(self._disbox.get("1.0", "end"))[:-1])
+                self.writeIn(info=write)
+            except er.parameterError:
+                write = lib.errorMessage()
+                self.writeIn(info=write["parameter"])
             except:
-                self._disbox.delete("1.0", "end")
-                self._disbox.insert(INSERT, self._errorMessage("unexpected"))
+                write = lib.errorMessage()
+                self.writeIn(info=write["unexpected"])
+                
+            
+            
+            
+            
+            
         
-        elif self._funcLib[2][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[2][1])
-        
-        elif self._funcLib[3][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[3][1])
-        
-        elif self._funcLib[4][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[4][1])
-        
-        elif self._funcLib[5][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[5][1])
-        
-        elif self._funcLib[6][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[6][1])
-        
-        elif self._funcLib[7][0] == choice:
-            self.api(self._head + "?action=" + self._funcLib[7][1])
-    
-    def api(self, url):
-        if True:
-            self._disbox.delete("1.0", "end")
-            self._disbox.insert(INSERT, url)
-        # midterm monday, reviewing
-        # next step > mojang api different filter to class
         # build a custom text changer txt file to change the language of the script, excecute in main.py
         
