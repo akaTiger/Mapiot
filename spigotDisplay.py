@@ -57,7 +57,7 @@ class spigotTracker(object):
             try:
                 write = apiObj.listResources(get=(self._disbox.get("1.0", "end"))[:-1])
                 self.writeIn(info=write)
-            except er.parameterError:
+            except (er.parameterError, AssertionError):
                 write = lib.errorMessage()
                 self.writeIn(info=write["parameter"])
             except:
