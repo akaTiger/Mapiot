@@ -1,7 +1,7 @@
 import lib
 import errorClasses as er
 
-class spigotAPI(object):
+class linkGen(object):
     def __init__(self):
         self._head = "https://api.spigotmc.org/simple/0.2/index.php"
         self._nameLib = [i[0] for i in lib.getParameters().values()]
@@ -27,3 +27,18 @@ class spigotAPI(object):
         else:
             arg = self._head + "?action=" + self._funcLib[0][1]
             return arg
+    
+    def getResource(self, get: str):
+        pass
+    def getResourcesByAuthor(self, get: str):
+        pass
+    def listResourceCategories(self, get: str):
+        pass
+    def getResourceUpdate(self, get: str):
+        pass
+    def getResourceUpdates(self, get: str):
+        pass
+    def getAuthor(self, get: str):
+        pass
+    def findAuthor(self, get: str):
+        pass
