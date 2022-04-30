@@ -97,18 +97,14 @@ class spigotTracker(object):
         elif self._funcLib[3][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[3][1])
         
-        
         elif self._funcLib[4][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[4][1])
-        
         
         elif self._funcLib[5][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[5][1])
         
-        
         elif self._funcLib[6][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[6][1])
-        
         
         elif self._funcLib[7][0] == choice:
             self.api(self._head + "?action=" + self._funcLib[7][1])
@@ -118,4 +114,5 @@ class spigotTracker(object):
             self._disbox.delete("1.0", "end")
             self._disbox.insert(INSERT, url)
         # midterm monday, reviewing
+        # next step > mojang api different filter to class
         
