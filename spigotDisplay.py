@@ -2,6 +2,7 @@ import lib
 from tkinter import *
 from tkinter.scrolledtext import ScrolledText
 from pathlib import Path
+from spigotClasses import *
 
 class idError(Exception):
     pass

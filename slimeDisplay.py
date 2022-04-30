@@ -2,7 +2,7 @@ from tkinter.scrolledtext import ScrolledText
 from turtle import width
 from tkinter import *
 import datetime
-from slimeChunk import *
+from slimeClasses import *
 
 class slimeChunkDisplay(object):
     def __init__(self, mainDisplay):

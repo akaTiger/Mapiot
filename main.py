@@ -1,9 +1,9 @@
 from tkinter import *
-from slimeChunkDisplay import *
+from slimeDisplay import *
 from playerAPI import *
 from serverAPI import *
 from mojangBugs import *
-from spigotAPI import *
+from spigotDisplay import *
 
 class app(object):
     def __init__(self, projName, windowWidth, windowLength):

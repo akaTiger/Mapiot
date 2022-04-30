@@ -1,5 +1,15 @@
-class listResources(object):
-    pass
+class spigotAPI(object):
+    def __init__(self, )
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 class getResource(object):
     pass
 class getResourcesByAuthor(object):
