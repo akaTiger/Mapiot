@@ -115,4 +115,5 @@ class spigotTracker(object):
             self._disbox.insert(INSERT, url)
         # midterm monday, reviewing
         # next step > mojang api different filter to class
+        # build a custom text changer txt file to change the language of the script, excecute in main.py
         
