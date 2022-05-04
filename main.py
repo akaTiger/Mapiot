@@ -79,4 +79,3 @@ class app(object):
 
 if __name__ == "__main__":
     startScript = app("Mapiot", 600, 520)
-    # lazy
