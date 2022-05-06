@@ -4,6 +4,7 @@ from playerAPI import *
 from serverAPI import *
 from mojangBugs import *
 from spigotDisplay import *
+import lib
 
 class app(object):
     def __init__(self, projName, windowWidth, windowLength):
@@ -11,10 +12,10 @@ class app(object):
         self.windowWidth = windowWidth
         self.windowLength = windowLength
         self.root = Tk()
+        self.tmdFuncOptions = lib.getFuncOpt()
         self.windowConfigure()
         self.mainFrameInit()
         self.topMenuDisplay()
-        # self.fucSlimeChecker()
         self.root.update()
         self.root.mainloop()
         
@@ -45,13 +46,6 @@ class app(object):
             i.destroy()
     
     def topMenuDisplay(self):
-        self.tmdFuncOptions = [
-            "Java Edition Slime Chunks Checker",
-            "Player API Query",
-            "Server API Query",
-            "Mojang Open Issues Checker",
-            "Spigot Resource Update Tracker"
-        ]
         self.tmdFuncVar = StringVar()
         self.tmdFuncVar.set("Player API Query")
         self.tmdOptionMenu = OptionMenu(self.topMenu, self.tmdFuncVar, *self.tmdFuncOptions)
