@@ -3,15 +3,17 @@ import errorClasses as er
 
 class linkGen(object):
     def __init__(self):
-        self._head = "https://api.spigotmc.org/simple/0.2/index.php"
+        self._head = lib.getSpigotUrlHead()
         self._nameLib = [i[0] for i in lib.getParameters().values()]
         self._funcLib = lib.getParameters()
     
     def listResources(self, get: str):
-        if True:
+        try:
             # assertation
             for i in get:
                 assert i.isalpha() is False
+        except:
+            raise er.parameterError
         if len(get) > 0:
             l = get.split(",")
             if len(l) == 1:
@@ -29,7 +31,20 @@ class linkGen(object):
             return arg
     
     def getResource(self, get: str):
-        pass
+        # assertation
+        try:
+            assert get != ""
+        except:
+            raise er.parameterMissing
+        try:
+            assert get.isnumeric() is True
+            if int(get) > 0:
+                pass
+        except:
+            raise er.parameterError
+        suf = "&id=" + get
+        arg = self._head + "?action=" + self._funcLib[1][1] + suf
+        return arg
     def getResourcesByAuthor(self, get: str):
         pass
     def listResourceCategories(self, get: str):
