@@ -1,5 +1,36 @@
-def version():
-    versions = [
+def getUrlSymbol():
+    content = {
+        "=": "%3D",
+        " ": "%20",
+        '"': "%22",
+        ",": "%2C"
+    }
+    return content
+
+def getMojangUrlHead():
+    content = "https://bugs.mojang.com/issues/?jql="
+    return content
+
+def getDebugFile():
+    content = "/Users/tiger/Downloads/debug.txt"
+    return content
+
+def getSpigotUrlHead():
+    content = "https://api.spigotmc.org/simple/0.2/index.php"
+    return content
+
+def getFuncOpt():
+    content = [
+        "Java Edition Slime Chunks Checker",
+        "Player API Query",
+        "Server API Query",
+        "Mojang Open Issues Checker",
+        "Spigot Resource Update Tracker"
+    ]
+    return content
+
+def getVersion():
+    content = [
         "EMPTY",
         "1.13.1.0",
         "1.14.1.0",
@@ -27,10 +58,10 @@ def version():
         "PS4 1.94",
         "PS4 1.95"
     ]
-    return versions
+    return content
 
-def project():
-    projects = [
+def getProject():
+    content = [
         "BDS",
         "MCPE",
         "MCCE",
@@ -40,10 +71,10 @@ def project():
         "MC",
         "WEB"
     ]
-    return projects
+    return content
 
-def status():
-    stat = [
+def getStatus():
+    content = [
         "Open",
         "In Progress",
         "Reopened",
@@ -51,10 +82,10 @@ def status():
         "Closed",
         "Postponed"
     ]
-    return stat
+    return content
 
 def getParameters():
-    p = {
+    content = {
         0: ["List All", "listResources"],
         1: ["Resource Info By ID", "getResource"],
         2: ["Resource Info By Author", "getResourcesByAuthor"],
@@ -64,12 +95,13 @@ def getParameters():
         6: ["Author Information By User ID", "getAuthor"],
         7: ["Author Information By Excact User Name", "findAuthor"]
     }
-    return p
+    return content
 
-def errorMessage():
-    e = {
+def getErrorMessage():
+    content = {
         "unexpected": "*** UNEXPECTED ERROR: PLEASE SUBMIT A ISSUE ***",
         "id": "*** ID ERROR: SHOULD NOT CONTAIN ALPHABET ***",
-        "parameter": "*** Input Parameter ERROR: CHECK GITHUB PAGE FOR CORRECT USEAGE ***"
+        "parameter": "*** Input Parameter ERROR: CHECK GITHUB PAGE FOR CORRECT USEAGE ***",
+        "missing": "*** Input is REQUIRED! ***"
     }
-    return e
+    return content
