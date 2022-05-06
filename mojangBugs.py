@@ -9,11 +9,16 @@ class mojBug(object):
     def __init__(self, mainDisplay):
         self.main = mainDisplay
         self._funcName = "Mojang Open Issues Checker"
-        self._head = "https://bugs.mojang.com/issues/?jql="
+        self._head = lib.getMojangUrlHead()
+        self._debugFile = lib.getDebugFile()
+        self._versions = lib.getVersion()
+        self._projects = lib.getProject()
+        self._stats = lib.getStatus()
+        
         self.initFrame()
     
     def debug(self, a):
-        with open("/Users/tiger/Downloads/debug.txt", "w") as file:
+        with open(self._debugFile, "w") as file:
             file.write(str(a))
     
     def initFrame(self):
@@ -39,11 +44,8 @@ class mojBug(object):
         if True:
             # init option menu
             self._version.set("EMPTY")
-            self._versions = lib.version()
             self._project.set("MC")
-            self._projects = lib.project()
             self._stat.set("Open")
-            self._stats = lib.status()
         
         if True:
             # self.query frames
@@ -68,12 +70,7 @@ class mojBug(object):
 
     def jqStr(self, lst):
         # lst [project, status, version, text]
-        dic = {
-            "=": "%3D",
-            " ": "%20",
-            '"': "%22",
-            ",": "%2C"
-        }
+        dic = lib.getUrlSymbol()
         
         if True:
             # format
