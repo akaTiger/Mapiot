@@ -10,7 +10,7 @@ class spigotTracker(object):
         self._main = mainDisplay
         self.funcName = "Spigot API Tracker"
         self._workDirectory = Path(__file__).parent
-        self._errorMessage = lib.errorMessage()
+        self._errorMessage = lib.getErrorMessage()
         self._nameLib = [i[0] for i in lib.getParameters().values()]
         self._funcLib = lib.getParameters()
         self.initFrame()
@@ -51,17 +51,20 @@ class spigotTracker(object):
             try:
                 write = link.listResources(get=(self._disbox.get("1.0", "end"))[:-1])
                 self.writter(info=write)
-            except (er.parameterError, AssertionError):
-                write = lib.errorMessage()
-                self.writter(info=write["parameter"])
+            except er.parameterError:
+                self.writter(info=self._errorMessage["parameter"])
             except:
-                write = lib.errorMessage()
-                self.writter(info=write["unexpected"])
+                self.writter(info=self._errorMessage["unexpected"])
         elif self._funcLib[1][0] == choice:
             try:
-                pass
+                write = link.getResource(get=(self._disbox.get("1.0", "end"))[:-1])
+                self.writter(info=write)
+            except er.parameterError:
+                self.writter(info=self._errorMessage["parameter"])
+            except er.parameterMissing:
+                self.writter(info=self._errorMessage["missing"])
             except:
-                pass
+                self.writter(info=self._errorMessage["unexpected"])
         elif self._funcLib[2][0] == choice:
             try:
                 pass
