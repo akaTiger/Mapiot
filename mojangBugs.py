@@ -3,6 +3,7 @@ from tkinter.scrolledtext import ScrolledText
 import lib
 from browser import *
 from bs4 import BeautifulSoup
+#lazy
 
 
 class mojBug(object):
