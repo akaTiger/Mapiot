@@ -1,5 +1,4 @@
 from tkinter.scrolledtext import ScrolledText
-from turtle import width
 from tkinter import *
 import datetime
 from slimeClasses import *

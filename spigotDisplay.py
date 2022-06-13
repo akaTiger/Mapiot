@@ -67,9 +67,15 @@ class spigotTracker(object):
                 self.writter(info=self._errorMessage["unexpected"])
         elif self._funcLib[2][0] == choice:
             try:
-                pass
+                nonForm = (self._disbox.get("1.0", "end"))[:-1]
+                write = link.getResourcesByAuthor(get=nonForm.split(","))
+                self.writter(info=write)
+            except er.parameterError:
+                self.writter(info=self._errorMessage["parameter"])
+            except er.parameterMissing:
+                self.writter(info=self._errorMessage["missing"])
             except:
-                pass
+                self.writter(info=self._errorMessage["unexpected"])
         elif self._funcLib[3][0] == choice:
             try:
                 pass
