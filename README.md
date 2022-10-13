@@ -18,3 +18,28 @@ v2.0 is comming!
 ##### Privacy
 
 *The script does not collect any information other than those actively provided by the user.*
+
+#### v1.0 Descriptions ⬇️
+##### Environment
+
+- python3
+- pip3
+- pip-requests
+- pip-pillow
+- pip-selenium
+- pip-webdriver_manager
+- pip-beautifulsoup
+
+##### Usage
+
+![](https://websiteimage-1258728659.cos.na-siliconvalley.myqcloud.com/mapiotA.png)
+
+![](https://websiteimage-1258728659.cos.na-siliconvalley.myqcloud.com/mapiotB.png)
+
+![](https://websiteimage-1258728659.cos.na-siliconvalley.myqcloud.com/mapiotC.png)
+
+![](https://websiteimage-1258728659.cos.na-siliconvalley.myqcloud.com/mapiotD.png)
+
+![](https://websiteimage-1258728659.cos.na-siliconvalley.myqcloud.com/mapiotE.png)
+
+![](https://websiteimage-1258728659.cos.na-siliconvalley.myqcloud.com/mapiotF.png)
